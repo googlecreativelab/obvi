@@ -92,6 +92,10 @@
           }
         })
 
+        voiceEl.addEventListener('onStateChange', function(event){
+          console.log('state:',event.detail.newValue);
+        })
+
 
       });
 

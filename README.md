@@ -22,14 +22,15 @@ And in the root of this repo:
 
 ```
 bower install
-polymer serve --open
+npm start
 ```
 
-## Installation
+## Setting up your project
 
-[Bower](https://bower.io/) is the recommended way to manage webcomponents. Bower also handles installing the components' dependencies and updating installed components. For more information, see [Installing with Bower](https://elements.polymer-project.org/guides/using-elements#installing-with-bower).  You need to have a ```bower.json``` file in the root of your project, and then install these dependencies:
+[Bower](https://bower.io/) handles installing the components' dependencies and updating installed components. For more information, see [Installing with Bower](https://elements.polymer-project.org/guides/using-elements#installing-with-bower).  You need to have a ```bower.json``` file in the root of your project, and then install these dependencies:
 
 ```
+bower init
 bower install --save webcomponentsjs
 bower install --save voice-button
 ```
@@ -71,18 +72,20 @@ Once you have some elements installed and you've loaded `webcomponents-lite.min.
 *Note: You must run your app from a web server for the HTML Imports polyfill to work properly. This requirement goes away when the API is available natively.*
 
 
-If your app is running from SSL (https://), the microphone access permission will be persistent. That is, users won't have to grant/deny access every time.
+*Also Note: If your app is running from SSL (https://), the microphone access permission will be persistent. That is, users won't have to grant/deny access every time.*
 
-### Single Build
+### Single Build (one bundled file, no Bower) Set up
 
-Static hosting services like GitHub Pages and Firebase Hosting don't support serving different files to different user agents. If you're hosting your application on one of these services, you'll need to serve a single build, which can be found in: ```build/dist/voice-button.html```
+Static hosting services like GitHub Pages and Firebase Hosting don't support serving different files to different user agents. If you're hosting your application on one of these services, you'll need to serve a single build, which can be found here: ```build/dist/voice-button.html```
+
+You can also customize the ```polymer build``` command in ```package.json``` to futher suit your needs.
 
 
 ## Usage
 
 Basic usage is:
 
-`<voice-button cloud-speech-api-key="XXX"></voice-button>`
+`<voice-button cloud-speech-api-key="YOUR_API_KEY"></voice-button>`
 
 ### Options:
 
@@ -115,7 +118,7 @@ You can listen for the following custom events from the voice button:
 | `onStateChange` | When the button changes state | `detail: { newValue: String, oldValue: String}` *see below for listening states* 
 | `onSpeechRecognitionUnsupported` | When SpeechRecognition isn't supported by the browser 
 
-Listening states:
+*Listening states:*
 
       IDLE: 'idle',
       LISTENING: 'listening',
