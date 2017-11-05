@@ -1,6 +1,7 @@
 <!-- to do: follow these steps: https://www.webcomponents.org/publish -->
 
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/owner/my-element)
+[![License][license-badge]][license-badge-url]
 
 # OBVI
 **O**ne **B**utton for **V**oice **I**nput is a customizable [webcomponent](https://developer.mozilla.org/en-US/docs/Web/Web_Components) built with [Polymer](https://www.polymer-project.org/) to make it easy for including a [Speech Recognition](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition) button in your projects.  
