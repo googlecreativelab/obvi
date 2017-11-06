@@ -105,14 +105,6 @@
         opacity:0;
       }
 
-      #arc{
-        position: absolute;
-        top: -15px;
-        left: -10px;
-        z-index:1;
-        display:none;
-      }
-
       .svg-container{
         position:absolute;
         top:0;
@@ -214,9 +206,6 @@
 
     <!-- shadow DOM -->
     <div class$="container [[state]]">
-
-      <!-- animating arc that occurs when user press & holds (not available for autodetect) -->
-      <canvas id="arc" width="130" height="130"></canvas>
 
       <!-- rings that scale out from button with user input (only available with autodetect)  -->
       <div id="circle-viz-container"></div>
@@ -441,10 +430,6 @@
         this.googleMicLoaderEl = Polymer.dom(this.root).querySelector('#mic-loading')
         this.googleMicDisabledEl = Polymer.dom(this.root).querySelector('#mic-svg-disabled')
         this.buttonEl = Polymer.dom(this.root).querySelector('#paper-button');
-
-        // TODO: finish create arc animation for when user has a timer set
-        // let canvasEl = Polymer.dom(this.root).querySelector('#arc');
-        // this.arc = new Arc(canvasEl, this.ringColor);
 
         let circleVizContainer = Polymer.dom(this.root).querySelector('#circle-viz-container');
         this.circleViz = new CircleViz(circleVizContainer, () => {
@@ -738,10 +723,6 @@
             .catch(this.onSpeechError.bind(this));
         }
         
-        if(this.arc){
-          this.googleMicEl.style.fill = '#FFFFFF';
-          this.arc.startAnimation();
-        }
         this.circleViz.startAnimation();
 
       }
@@ -753,10 +734,6 @@
           this.removeSpeechEventListeners();          
         } else {
           this.stopRecordingVoice();
-        }
-        if(this.arc){
-          this.googleMicEl.style.fill = this.micColor;
-          this.arc.stopAnimation();
         }
         this.circleViz.stopAnimation();
       }
@@ -824,69 +801,6 @@
         this.googleMicLoaderEl.style.opacity = 0;
         this.googleMicEl.style.display = 'block';
       }
-    }
-
-
-    class Arc {
-
-      constructor(el, color){
-        this.stopped = true;
-        this.width = el.width;
-        this.height = el.height;
-
-        // canvas properties
-        this.ctx = el.getContext('2d');
-        this.ctx.lineWidth = 8;
-        this.ctx.strokeStyle = color;
-
-        // canvas math
-        this.x = this.width / 2;
-        this.y = this.height / 2;
-        this.radius = this.width / 2 - 12;
-        this.circum = Math.PI * 2;
-        this.start = Math.PI / -2; // Start position (top)
-        this.finish = 100; // Finish (in %)
-        this.curr = 0; // Current position (in %)
-      }
-
-      startAnimation(){
-        if(this.stopped){
-          this.stopped = false;
-          this.animate();
-        }
-      }
-
-      stopAnimation(){
-        this.stopped = true;
-        this.curr = 0;
-        this.ctx.clearRect(0, 0, this.width, this.height);
-      }
-
-      animate(draw_to){
-        // Clear off the canvas
-        this.ctx.clearRect(0, 0, this.width, this.height);
-        // Start over
-        if(!this.stopped){
-          this.ctx.beginPath();
-          // arc(x, y, radius, startAngle, endAngle, anticlockwise)
-          // Re-draw from the very beginning each time so there isn't tiny line spaces between each section (the browser paint rendering will probably be smoother too)
-          this.ctx.arc(this.x, this.y, this.radius, this.start, draw_to, false);
-          // Draw
-          this.ctx.stroke();
-          // Increment percent
-          this.curr++;
-
-          if(this.curr >= this.finish + 1){
-            this.curr = 0;
-          }
-
-          // repeat this function until the end is reached
-          requestAnimationFrame(() => {
-            this.animate(this.circum * this.curr / 100 + this.start);
-          });
-        }
-      }
-
     }
 
     window.mobileAndTabletcheck = function() {
