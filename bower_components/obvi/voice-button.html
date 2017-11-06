@@ -17,7 +17,7 @@
 <link rel="import" href="../paper-button/paper-button.html">
 <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
 
-<script src="bower_components/recordrtc/RecordRTC.js"></script>
+<script src="../recordrtc/RecordRTC.js"></script>
 
 <dom-module id="voice-button">
 
@@ -922,7 +922,7 @@
           stopAnimation(){
             this.stopped = true;
             this.containerEl.style.opacity = 0;
-            if(this.audioStream.getAudioTracks().length > 0){
+            if(this.audioStream && this.audioStream.getAudioTracks().length > 0){
               this.audioStream.getAudioTracks()[0].stop();
             }
           }
