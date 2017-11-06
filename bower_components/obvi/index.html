@@ -1,0 +1,105 @@
+<!-- // Copyright 2017 Google Inc.
+//
+//     Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+//     You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+//     Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+//     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//     See the License for the specific language governing permissions and
+// limitations under the License. -->
+
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <meta name="google" content="notranslate" />
+
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="voice-button.html">
+    <style>
+
+      body{
+        background: #dcdcdc;
+        font-family: 'Google Sans', sans-serif;
+        font-weight: 400;
+        -webkit-font-smoothing: antialiased;
+        -webkit-line-break: after-white-space;
+        color:white;
+      }
+
+      *{
+        box-sizing: border-box;
+      }
+      
+      voice-button{
+        position:fixed;
+        left:50%;
+        top:50%;
+        margin-left:-50px;
+        margin-top:-180px;
+      }
+
+      #transcription{
+        position:fixed;
+        font-family: Roboto, sans-serif;
+        font-weight:300;
+        -webkit-font-smoothing: antialiased;
+        -webkit-line-break: after-white-space;
+        display: block;
+        width:100%;
+        padding:0 35%;
+        color:#404040;
+        text-align: center;
+        font-size: 1.6em;
+        top:50%;
+      }
+      #transcription.interim{
+        color: #9c9c9c;
+      }
+
+
+    </style>
+  </head>
+  <body>
+
+    <voice-button cloud-speech-api-key="AIzaSyAkUDloJwxS5jouGnY43tcQ2VaArZQcyRM" autodetect></voice-button>
+    
+
+    <div id="transcription"></div>
+
+    <script>
+
+      window.addEventListener('WebComponentsReady', function() {
+        var voiceEl = document.querySelector('voice-button'),
+          transcriptionEl = document.getElementById('transcription');
+
+        voiceEl.addEventListener('mousedown', function(event){
+          transcriptionEl.innerHTML = '';
+        })
+
+        var transcription = '';
+        voiceEl.addEventListener('onSpeech', function(event){
+          transcription = event.detail.speechResult;
+          transcriptionEl.innerHTML = transcription;
+          transcriptionEl.classList.add('interim');
+          if(event.detail.isFinal){
+            transcriptionEl.classList.remove('interim');
+          }
+        })
+
+        voiceEl.addEventListener('onStateChange', function(event){
+          console.log('state:',event.detail.newValue);
+        })
+
+
+      });
+
+
+    </script>
+  </body>
+</html>

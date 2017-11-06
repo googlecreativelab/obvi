@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../voice-button.html">
+</head>
+<body>
+  
+  <voice-button id="fixture-default" cloud-speech-api-key="AIzaSyAkUDloJwxS5jouGnY43tcQ2VaArZQcyRM"></voice-button>
+  <voice-button id="fixture-large" diameter="200" cloud-speech-api-key="AIzaSyAkUDloJwxS5jouGnY43tcQ2VaArZQcyRM"></voice-button>
+  <voice-button id="fixture-small" diameter="20" cloud-speech-api-key="AIzaSyAkUDloJwxS5jouGnY43tcQ2VaArZQcyRM"></voice-button>
+
+  <script>
+    suite('<voice-button>', function() {
+      test('is correct size', function() {
+        var defaultEl = document.getElementById('fixture-default'),
+          largerEl = document.getElementById('fixture-large'),
+          smallerEl = document.getElementById('fixture-small');
+        
+        assert.isTrue(defaultEl.diameter === 100);
+        assert.isTrue(defaultEl.offsetWidth === 100);
+        
+        assert.isTrue(largerEl.diameter === 200);
+        assert.isTrue(largerEl.offsetWidth === 200);
+
+        assert.isTrue(smallerEl.diameter === 20);
+        assert.isTrue(smallerEl.offsetWidth === 20);
+      });
+    });
+  </script>
+</body>
+</html>

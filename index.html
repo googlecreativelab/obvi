@@ -29,6 +29,10 @@
     <link rel="import" href="bower_components/obvi/build/dist/voice-button.html">
     <style>
 
+      *{
+        box-sizing: border-box;
+      }
+
       body{
         --header-height:20%;
         --highlight-color: #f3f3f3;
@@ -41,8 +45,9 @@
         -webkit-font-smoothing: antialiased;
         -webkit-line-break: after-white-space;
         color:white;
-        margin:150px 0;
+        margin:80px 0;
         padding:0;
+        height:100%;
       }
 
       .bubble{
@@ -57,6 +62,7 @@
         padding: 12px 20px;
         text-align:left;
         display:inline-block;
+        opacity:0;
       }
 
       .bubble:after{
@@ -73,9 +79,6 @@
       }
 
 
-      *{
-        box-sizing: border-box;
-      }
 
       #transcription{
         position:fixed;
@@ -98,6 +101,7 @@
       .container{
         max-width:800px;
         margin:0 auto;
+        position:relative;
       }
 
       h1.title{
@@ -265,6 +269,14 @@
         max-width:100%; 
       }
 
+      .arrow{
+        position:absolute;
+        top:50%;
+        left:50%;
+        margin-top:50px;
+        margin-left:-10px;
+      }
+
       .gist{font-size:13px;line-height:18px;margin-bottom:20px;width:100%}
       .gist pre{font-family:Menlo,Monaco,'Bitstream Vera Sans Mono','Courier New',monospace !important}
       .gist-meta{font-family:Helvetica,Arial,sans-serif;font-size:13px !important; display:none;}
@@ -282,20 +294,21 @@
       <p class="desc">A drop-in <a href="http://polymer-project.org" target="_blank">Polymer</a> web component for projects that use speech recognition</p>
     
       <div class="buttons">
-        <a class="button download" href="#">Download v1.0 .zip</a>
-        <a class="button github" href="#"><img src="img/GitHub_Logo_White.png" alt=""><img class="dark" src="img/GitHub_Logo_Black.png" alt=""></a>
+        <a class="button download" href="https://github.com/googlecreativelab/obvi/archive/master.zip">Download .zip</a>
+        <a class="button github" href="https://github.com/googlecreativelab/obvi"><img src="img/GitHub_Logo_White.png" alt=""><img class="dark" src="img/GitHub_Logo_Black.png" alt=""></a>
       </div>
 
       <section class="default">
-        <h1>Default</h1>
+        <h1>Standard use</h1>
         <div class="container">
           <div class="snippet">
             <script src="https://gist.github.com/nick-jonas/2b0b7be9ab8f20c44ed231ea0b3518d0.js"></script>
           </div>
           <div class="button">
-            <voice-button click-for-permission="true" cloud-speech-api-key="AIzaSyAkUDloJwxS5jouGnY43tcQ2VaArZQcyRM"></voice-button>
+            <voice-button cloud-speech-api-key="AIzaSyAkUDloJwxS5jouGnY43tcQ2VaArZQcyRM" autodetect></voice-button>
           </div>
-          <div class="bubble transcribe">Press & hold and start speaking...</div>
+          <div id="arrow" class="arrow"><img src="img/arrow.png" alt=""></div>
+          <div id="bubble" class="bubble transcribe">-</div>
         </div>
       </section>
 
@@ -310,10 +323,17 @@
         voiceButtonEls = document.querySelectorAll('voice-button');
 
         [].forEach.call(voiceButtonEls, function(voiceEl){
+          
           voiceEl.addEventListener('onSpeech', function(event){
             var speech = event.detail.speechResult;
+            document.getElementById('bubble').style.opacity = (speech.length > 0) ? 1 : 0;
             this.parentElement.parentElement.querySelector('.bubble').innerHTML = speech;
           });
+          
+          voiceEl.addEventListener('click', function(){
+            document.getElementById('arrow').style.display = 'none';
+          });
+
         });
 
       });

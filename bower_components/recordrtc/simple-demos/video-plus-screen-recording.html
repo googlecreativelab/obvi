@@ -1,0 +1,89 @@
+<style>
+    html, body, video, canvas {
+        margin: 0!important;
+        padding: 0!important;
+        overflow: hidden!important;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<title>Video+Screen recording using RecordRTC</title>
+<h1>
+    Video+Screen recording using RecordRTC
+    (Requires <a href="https://chrome.google.com/webstore/detail/screen-capturing/ajhifddimkapgcifgcodmmfdlknahffk" target="_blank">THIS CHROME EXTENSION</a>)
+</h1>
+
+<video controls autoplay></video>
+
+<script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script src="https://cdn.WebRTC-Experiment.com/getScreenId.js"></script>
+<script>
+function captureScreen(cb) {
+    getScreenId(function (error, sourceId, screen_constraints) {
+        navigator.mediaDevices.getUserMedia(screen_constraints).then(cb).catch(function(error) {
+          console.error('getScreenId error', error);
+
+          alert('Failed to capture your screen. Please check Chrome console logs for further information.');
+        });
+    });
+}
+
+function captureCamera(cb) {
+    navigator.mediaDevices.getUserMedia({audio: true, video: true}).then(cb);
+}
+
+function keepStreamActive(stream) {
+    var video = document.createElement('video');
+    video.muted = true;
+    setSrcObject(stream, video);
+    video.style.display = 'none';
+    (document.body || document.documentElement).appendChild(video);
+}
+
+captureScreen(function(screen) {
+    keepStreamActive(screen);
+    captureCamera(function(camera) {
+        keepStreamActive(camera);
+
+        screen.width = window.screen.width;
+        screen.height = window.screen.height;
+        screen.fullcanvas = true;
+        
+        camera.width = 320;
+        camera.height = 240;
+        camera.top = screen.height - camera.height;
+        camera.left = screen.width - camera.width;
+        
+        var recorder = RecordRTC([screen, camera], {
+            type: 'video',
+            mimeType: 'video/webm',
+            previewStream: function(s) {
+                document.querySelector('video').muted = true;
+                setSrcObject(s, document.querySelector('video'));
+            }
+        });
+
+        recorder.startRecording();
+
+        setTimeout(function() {
+            recorder.stopRecording(function() {
+                var blob = recorder.getBlob();
+                document.querySelector('video').src = URL.createObjectURL(blob);
+                document.querySelector('video').muted = false;
+
+                [screen, camera].forEach(function(stream) {
+                    stream.getVideoTracks().forEach(function(track) {
+                        track.stop();
+                    });
+
+                    stream.getAudioTracks().forEach(function(track) {
+                        track.stop();
+                    });
+                })
+            });
+        }, 5 * 1000);
+    });
+});
+</script>
