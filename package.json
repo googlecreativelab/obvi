@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "description": "One Button for Voice Input",
-  "repository": "https://creativelab-internal.googlesource.com/asr-polymer-component",
+  "repository": "https://github.com/googlecreativelab/obvi",
   "author": "Nick Jonas <njonas@google.com>",
   "license": "MIT",
   "scripts": {
