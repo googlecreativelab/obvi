@@ -1,7 +1,8 @@
 {
   "name": "obvi",
-  "version": "0.0.1",
-  "license": "MIT",
+  "license": "Apache-2.0",
+  "description": "A Polymer 2+ button for including voice recognition in a web-based project",
+  "main": "voice-button.html",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -20,5 +21,21 @@
   },
   "devDependencies": {
     "web-component-tester": "^6.3.0"
+  },
+  "keywords": [
+    "voice",
+    "speech-recognition",
+    "speech recognition",
+    "asr",
+    "polymer",
+    "button"
+  ],
+  "authors": {
+    "name": "Nick Jonas"
+  },
+  "homepage": "https://googlecreativelab.github.io/obvi/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/googlecreativelab/obvi.git"
   }
 }

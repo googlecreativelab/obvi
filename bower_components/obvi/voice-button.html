@@ -104,14 +104,6 @@
         opacity:0;
       }
 
-      #arc{
-        position: absolute;
-        top: -15px;
-        left: -10px;
-        z-index:1;
-        display:none;
-      }
-
       .svg-container{
         position:absolute;
         top:0;
@@ -183,8 +175,6 @@
         opacity:0.2;
         border-radius:50%;
         position:absolute;
-        top:2px;
-        left:2.5px;
         transform-origin: center center;
         transform:scale(1);
       }
@@ -215,9 +205,6 @@
 
     <!-- shadow DOM -->
     <div class$="container [[state]]">
-
-      <!-- animating arc that occurs when user press & holds (not available for autodetect) -->
-      <canvas id="arc" width="130" height="130"></canvas>
 
       <!-- rings that scale out from button with user input (only available with autodetect)  -->
       <div id="circle-viz-container"></div>
@@ -273,7 +260,7 @@
       NONE: 'none'
     })
 
-    class IconToggle extends Polymer.GestureEventListeners(Polymer.Element) {
+    class VoiceButton extends Polymer.GestureEventListeners(Polymer.Element) {
       
       static get is() {
         return 'voice-button';
@@ -443,10 +430,6 @@
         this.googleMicDisabledEl = Polymer.dom(this.root).querySelector('#mic-svg-disabled')
         this.buttonEl = Polymer.dom(this.root).querySelector('#paper-button');
 
-        // TODO: finish create arc animation for when user has a timer set
-        // let canvasEl = Polymer.dom(this.root).querySelector('#arc');
-        // this.arc = new Arc(canvasEl, this.ringColor);
-
         let circleVizContainer = Polymer.dom(this.root).querySelector('#circle-viz-container');
         this.circleViz = new CircleViz(circleVizContainer, () => {
           this.onSpeechError({error: 'not-allowed'});
@@ -575,7 +558,7 @@
         if(this.autodetect && (this.state === ListeningState.IDLE || this.state === ListeningState.USER_INPUT)){
           this.stopListening();
         }
-        else if(!this.autodetect){
+        else if(!this.autodetect){  // press & hold mode, stop listening when mouse is up
           this.stopListening();
         }
 
@@ -739,10 +722,6 @@
             .catch(this.onSpeechError.bind(this));
         }
         
-        if(this.arc){
-          this.googleMicEl.style.fill = '#FFFFFF';
-          this.arc.startAnimation();
-        }
         this.circleViz.startAnimation();
 
       }
@@ -754,10 +733,6 @@
           this.removeSpeechEventListeners();          
         } else {
           this.stopRecordingVoice();
-        }
-        if(this.arc){
-          this.googleMicEl.style.fill = this.micColor;
-          this.arc.stopAnimation();
         }
         this.circleViz.stopAnimation();
       }
@@ -827,184 +802,132 @@
       }
     }
 
+    /*
+      
+      Circle animation behind the voice button
+
+    */
     class CircleViz {
 
-      constructor(containerEl, onNoMicAccess){
-        this.containerEl = containerEl;
-        this.stopped = true;
-        this.circle = document.createElement('div');
-        this.circle.classList.add('circle');
-        this.containerEl.appendChild(this.circle);
-        this.isMobile = window.mobileAndTabletcheck();
-        this.onNoMicAccess = onNoMicAccess;
-        this.attachedUserMediaStream = false;
-      }
+          constructor(containerEl, onNoMicAccess){
+            this.containerEl = containerEl;
+            this.stopped = true;
+            this.circle = document.createElement('div');
+            this.circle.classList.add('circle');
+            this.containerEl.appendChild(this.circle);
+            this.isMobile = window.mobileAndTabletcheck();
+            this.onNoMicAccess = onNoMicAccess;
+            this.attachedUserMediaStream = false;
+            // create one audio context
+            var AudioContext = window.AudioContext || window.webkitAudioContext;
+            if(typeof AudioContext !== 'undefined'){
+              this.audioContext = new AudioContext();
+            }
+          }
 
-      attachUserMediaStream(){
-        // if it has been stopped, let's open it back up
-        if(!this.attachedUserMediaStream || (this.audioStream && !this.audioStream.active)){
-          if(this.isMobile){
+          attachUserMediaStream(){
+            // if it has been stopped, let's open it back up
+            if(!this.attachedUserMediaStream || (this.audioStream && !this.audioStream.active)){
+              if(this.isMobile){
+                this.doDraw();
+              }else{
+                if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+                  navigator.mediaDevices
+                    .getUserMedia({audio:true})
+                    .then(this.soundAllowed.bind(this))
+                    .catch(this.soundNotAllowed.bind(this));
+                }else{ // deprecated approach: https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getUserMedia
+                  navigator.getUserMedia = navigator['getUserMedia'] || navigator['webkitGetUserMedia'] || navigator['mozGetUserMedia'] || null;
+                  if (navigator.getUserMedia) navigator.getUserMedia({ audio: true }, (stream) => this.soundAllowed(stream), (e) => this.soundNotAllowed(e));
+                }
+              }
+              this.attachedUserMediaStream = true;
+            }
+          }
+
+          soundNotAllowed(e){
+            // circle viz graceful degrade, but let know main component know
+            this.onNoMicAccess();
+          }
+
+          soundAllowed(stream) {
+            this.audioStream = stream;
+            if(this.audioContext){
+              var audioStream = this.audioContext.createMediaStreamSource(stream);
+              this.analyser = this.audioContext.createAnalyser();
+              audioStream.connect(this.analyser);
+              this.analyser.fftSize = 1024;
+              this.frequencyArray = new Uint8Array(this.analyser.frequencyBinCount);
+            }
             this.doDraw();
-          }else{
-            if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-              navigator.mediaDevices
-                .getUserMedia({audio:true})
-                .then(this.soundAllowed.bind(this))
-                .catch(this.soundNotAllowed.bind(this));
-            }else{ // deprecated approach: https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getUserMedia
-              navigator.getUserMedia = navigator['getUserMedia'] || navigator['webkitGetUserMedia'] || navigator['mozGetUserMedia'] || null;
-              if (navigator.getUserMedia) navigator.getUserMedia({ audio: true }, (stream) => this.soundAllowed(stream), () => this.soundNotAllowed());
+          }
+
+          getCircleScale(){
+            let scale = 1;
+            if(this.analyser){
+              this.analyser.getByteFrequencyData(this.frequencyArray);
+              // todo: frequency array is all zeros for android chrome
+              let freqSum = 0;
+              for (let i = 0; i < 255; i++) {
+                freqSum += this.frequencyArray[i]
+              }
+              let freqAvg = freqSum / 255
+              scale = 1 + ((freqAvg / 255) * 1.2)
+            }else{
+              // don't have FFT spectrum, so fake it
+              let currScale = this.getCurrentScale();
+              if(currScale){
+                var rand = 1 + Math.random();
+                // smooth it
+                scale = currScale + ((rand - currScale) / 8);
+              }
+            }
+            return scale;
+          }
+
+          doDraw(){
+            if(!this.stopped){
+              let newScale = this.getCircleScale();
+              this.circle.style.transform = 'scale(' + newScale + ') translate(2px, 2px)';
+            }else{
+              // stopped, slowly scale down
+              let currScale = this.getCurrentScale();
+              if(currScale){
+                if(currScale > 0){
+                  currScale = Math.max(0, currScale - 0.05);
+                  this.circle.style.transform = 'scale(' + currScale + ') translate(2px, 2px)';
+                }
+              }
+            }
+            this.animation = requestAnimationFrame(this.doDraw.bind(this));
+          }
+
+          getCurrentScale(){
+            let splitProperty = this.circle.style.transform.split(new RegExp(/\(|\)/, 'g'))
+            if(splitProperty.length === 3){
+              let currScale = parseFloat(splitProperty[1]);
+              return currScale;
+            }
+            return null;
+          }
+
+          startAnimation(){
+            if(this.stopped){
+              this.containerEl.style.opacity = 1;
+              this.stopped = false;
+              this.attachUserMediaStream();
             }
           }
-          this.attachedUserMediaStream = true;
-        }
-      }
 
-      soundNotAllowed() { 
-        // circle viz graceful degrade, but let know main component know
-        this.onNoMicAccess();
-      }
-
-      soundAllowed(stream) {
-        this.audioStream = stream;
-        this.audioContext = new AudioContext()
-        var audioStream = this.audioContext.createMediaStreamSource(stream);
-        this.analyser = this.audioContext.createAnalyser();
-        audioStream.connect(this.analyser);
-        this.analyser.fftSize = 1024;
-        this.frequencyArray = new Uint8Array(this.analyser.frequencyBinCount);
-        this.doDraw();
-      }
-
-      getCircleScale(){
-        let scale = 1;
-        if(this.analyser){
-          this.analyser.getByteFrequencyData(this.frequencyArray);
-          // todo: frequency array is all zeros for android chrome
-          let freqSum = 0;
-          for (let i = 0; i < 255; i++) {
-            freqSum += this.frequencyArray[i]
-          }
-          let freqAvg = freqSum / 255
-          scale = 1 + ((freqAvg / 255) * 1.2)
-        }else{
-          // don't have FFT spectrum, so fake it
-          let currScale = this.getCurrentScale();
-          if(currScale){
-            var rand = 1 + Math.random();
-            // smooth it
-            scale = currScale + ((rand - currScale) / 8);
-          }
-        }
-        return scale;
-      }
-
-      doDraw(){
-        if(!this.stopped){
-          let newScale = this.getCircleScale();
-          this.circle.style.transform = 'scale(' + newScale + ')';
-        }else{
-          // stopped, slowly scale down
-          let currScale = this.getCurrentScale();
-          if(currScale){
-            if(currScale > 0){
-              currScale = Math.max(0, currScale - 0.05);
-              this.circle.style.transform = 'scale(' + currScale + ')';
+          stopAnimation(){
+            this.stopped = true;
+            this.containerEl.style.opacity = 0;
+            if(this.audioStream.getAudioTracks().length > 0){
+              this.audioStream.getAudioTracks()[0].stop();
             }
           }
+
         }
-        this.animation = requestAnimationFrame(this.doDraw.bind(this));
-      }
-
-      getCurrentScale(){
-        let splitProperty = this.circle.style.transform.split(new RegExp(/\(|\)/, 'g'))
-        if(splitProperty.length === 3){
-          let currScale = parseFloat(splitProperty[1]);
-          return currScale;
-        }
-        return null;
-      }
-
-      startAnimation(){
-        if(this.stopped){
-          this.containerEl.style.opacity = 1;
-          this.stopped = false;
-          this.attachUserMediaStream();
-        }
-      }
-
-      stopAnimation(){
-        this.stopped = true;
-        this.containerEl.style.opacity = 0;
-        if(this.audioStream.getAudioTracks().length > 0){
-          this.audioStream.getAudioTracks()[0].stop();
-        }
-      }
-
-    }
-
-
-    class Arc {
-
-      constructor(el, color){
-        this.stopped = true;
-        this.width = el.width;
-        this.height = el.height;
-
-        // canvas properties
-        this.ctx = el.getContext('2d');
-        this.ctx.lineWidth = 8;
-        this.ctx.strokeStyle = color;
-
-        // canvas math
-        this.x = this.width / 2;
-        this.y = this.height / 2;
-        this.radius = this.width / 2 - 12;
-        this.circum = Math.PI * 2;
-        this.start = Math.PI / -2; // Start position (top)
-        this.finish = 100; // Finish (in %)
-        this.curr = 0; // Current position (in %)
-      }
-
-      startAnimation(){
-        if(this.stopped){
-          this.stopped = false;
-          this.animate();
-        }
-      }
-
-      stopAnimation(){
-        this.stopped = true;
-        this.curr = 0;
-        this.ctx.clearRect(0, 0, this.width, this.height);
-      }
-
-      animate(draw_to){
-        // Clear off the canvas
-        this.ctx.clearRect(0, 0, this.width, this.height);
-        // Start over
-        if(!this.stopped){
-          this.ctx.beginPath();
-          // arc(x, y, radius, startAngle, endAngle, anticlockwise)
-          // Re-draw from the very beginning each time so there isn't tiny line spaces between each section (the browser paint rendering will probably be smoother too)
-          this.ctx.arc(this.x, this.y, this.radius, this.start, draw_to, false);
-          // Draw
-          this.ctx.stroke();
-          // Increment percent
-          this.curr++;
-
-          if(this.curr >= this.finish + 1){
-            this.curr = 0;
-          }
-
-          // repeat this function until the end is reached
-          requestAnimationFrame(() => {
-            this.animate(this.circum * this.curr / 100 + this.start);
-          });
-        }
-      }
-
-    }
 
     window.mobileAndTabletcheck = function() {
     var check = false;
@@ -1115,7 +1038,7 @@
       }
     }
 
-    customElements.define(IconToggle.is, IconToggle);
+    customElements.define(VoiceButton.is, VoiceButton);
   </script>
 
 </dom-module>

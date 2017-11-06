@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # OBVI
-**O**ne **B**utton for **V**oice **I**nput is a customizable [webcomponent](https://developer.mozilla.org/en-US/docs/Web/Web_Components) built with [Polymer](https://www.polymer-project.org/) to make it easy for including a [Speech Recognition](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition) button in your projects.  
+**O**ne **B**utton for **V**oice **I**nput is a customizable [webcomponent](https://developer.mozilla.org/en-US/docs/Web/Web_Components) built with [Polymer 2+](https://www.polymer-project.org/) to make it easy for including speech recognition in your web-based projects.  It uses the [Speech Recognition](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition) API, and for unsupported browsers it will fallback to a client-side [Google Cloud Speech API](https://cloud.google.com/speech/) solution.  
 
 ![example](https://storage.googleapis.com/readme-assets/voice-button.gif)
 
@@ -51,8 +51,8 @@ Once you have some elements installed and you've loaded `webcomponents-lite.min.
     <link rel="import" href="bower_components/voice-button/voice-button.html">
   </head>
   <body>
-    <!-- 3. Declare the element. Configure using its attributes. -->
-    <voice-button id="voice-button" autodetect></voice-button>
+    <!-- 3. Declare the element. Configure using its attributes, include your own API key -->
+    <voice-button id="voice-button" cloud-speech-api-key="YOUR_API_KEY" autodetect></voice-button>
 
     <script>
       // To ensure that elements are ready on polyfilled browsers, 
@@ -75,11 +75,11 @@ Once you have some elements installed and you've loaded `webcomponents-lite.min.
 
 *Also Note: If your app is running from SSL (https://), the microphone access permission will be persistent. That is, users won't have to grant/deny access every time.*
 
-### Single Build (one bundled file, no Bower) Set up
+### For a single-build (one bundled file, no Bower dependency) set up:
 
 Static hosting services like GitHub Pages and Firebase Hosting don't support serving different files to different user agents. If you're hosting your application on one of these services, you'll need to serve a single build, which can be found here: ```build/dist/voice-button.html```
 
-You can also customize the ```polymer build``` command in ```package.json``` to futher suit your needs.
+You can also customize the ```polymer build``` command in ```package.json``` and create your own build file to futher suit your needs.
 
 
 ## Usage
