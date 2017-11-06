@@ -99,14 +99,14 @@ class CircleViz {
       doDraw(){
         if(!this.stopped){
           let newScale = this.getCircleScale();
-          this.circle.style.transform = 'scale(' + newScale + ')';
+          this.circle.style.transform = 'scale(' + newScale + ') translate(2px, 2px)';
         }else{
           // stopped, slowly scale down
           let currScale = this.getCurrentScale();
           if(currScale){
             if(currScale > 0){
               currScale = Math.max(0, currScale - 0.05);
-              this.circle.style.transform = 'scale(' + currScale + ')';
+              this.circle.style.transform = 'scale(' + currScale + ') translate(2px, 2px)';
             }
           }
         }
