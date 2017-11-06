@@ -16,32 +16,65 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans" rel="stylesheet">
     <meta name="google" content="notranslate" />
 
-    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="voice-button.html">
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script>
+      /*
+      window.Polymer = window.Polymer || {};
+      window.Polymer.dom = 'shadow';
+      */
+    </script>
+    <link rel="import" href="bower_components/asr-polymer-component/build/dist/voice-button.html">
     <style>
 
       body{
+        --header-height:20%;
+        --highlight-color: #f3f3f3;
+        --background-color:#dcdcdc;
+
         background: #dcdcdc;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0) 30%) #dcdcdc;
         font-family: 'Google Sans', sans-serif;
         font-weight: 400;
         -webkit-font-smoothing: antialiased;
         -webkit-line-break: after-white-space;
         color:white;
+        margin:150px 0;
+        padding:0;
       }
+
+      .bubble{
+        position: relative;
+        width: auto;
+        height: auto;
+        padding: 0px;
+        background: #b3b3b3;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        padding: 12px 20px;
+        text-align:left;
+        display:inline-block;
+      }
+
+      .bubble:after{
+        content: '';
+        position: absolute;
+        border-style: solid;
+        border-width: 20px 20px 0px 0;
+        border-color: transparent #b3b3b3;
+        display: block;
+        width: 0;
+        z-index: 1;
+        left: -10px;
+        bottom: 0px;
+      }
+
 
       *{
         box-sizing: border-box;
-      }
-      
-      voice-button{
-        position:fixed;
-        left:50%;
-        top:50%;
-        margin-left:-50px;
-        margin-top:-180px;
       }
 
       #transcription{
@@ -62,40 +95,226 @@
         color: #9c9c9c;
       }
 
+      .container{
+        max-width:800px;
+        margin:0 auto;
+      }
+
+      h1.title{
+        position: relative;
+        margin: 0;
+        text-align: left;
+        font-size: 4.0em;
+        color: #fff;
+        z-index: 0;
+      }
+
+      h2.abbreviation{
+        position:relative;
+        z-index:1;
+        font-size:1.2em;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      h2 span{
+        color: var(--highlight-color);
+        font-weight:800;
+        border-bottom:2px solid var(--highlight-color);
+      }
+
+      p.desc{
+        max-width: 180px;
+        margin-top:36px;
+        font-size: 1.1em;
+        z-index:2;
+      }
+
+      a{
+        color:var(--highlight-color);
+      }
+
+      hr{
+        border: none;
+        border-top: 3px solid #f6ffe5;
+        text-align: left;
+        left: 2px;
+        margin: 0;
+        position: relative;
+      }
+
+
+      section{
+        box-shadow:#b9b9b9 0px 1px 2px 0px inset;
+        margin:60px 0;
+        padding:0 25px;
+        border-radius:5px;
+      }
+
+      section h1{
+        font-size:1.1em;
+        padding: 30px 15px 0px;
+      }
+
+      section .container{
+        width:100%;
+        text-align:left
+      }
+
+      section .container .button, section .container .snippet{        
+      }
+
+      section .container .button{
+        height: 230px;
+        margin: 0 auto;
+        position: relative;
+        display: block;
+        text-align: center;
+      }
+      section .container .snippet{
+        padding:10px 15px 25px;
+      }
+
+      section .container .button voice-button{
+        position:relative;
+        top:50%;
+        transform:translateY(-50%);
+        margin-top:-23px;
+      }
+      section .container .button voice-button:nth-child(2n){
+        margin-left:140px;
+      }
+
+
+      section{
+        background:#d4d4d4;
+        color:var(--highlight-color);
+        margin-top:90px;
+      }
+
+      section.scalable .container .button .small-button{
+        top: 0px;
+        margin-right: 40px;
+      }
+
+      .transcribe{
+        font-weight:800;
+        position:relative;
+        left:12px;
+        margin-bottom:35px;
+      }
+
+      .buttons{
+        text-align:center;
+        margin-bottom:200px;
+      }
+      .button.download, .button.github{
+        transition:all 0.24s ease;
+        width: 46%;
+        position: relative;
+        display: inline-block;
+        padding: 15px 30px;
+        text-align: center;
+        border-radius: 6px;
+        font-size: 1.1em;
+        margin-top: 50px;
+        font-weight: 800;
+        border:2px solid rgba(255, 255, 255, 1);
+        color:rgba(255, 255, 255, 1);
+      }
+      .button.download:hover, .button.github:hover{
+        color:#666;
+        background:white;
+      }
+      .button.github:hover .dark{
+        opacity:0.6;
+      }
+      .button.download{
+        float:left;
+        /*margin-right:2%;*/
+      }
+      .button.github{
+        float:right;
+        /*margin-left:2%;*/
+      }
+      .button.github img{
+        transition:all 0.24s ease;
+        height: 20px;
+        width: auto;
+        opacity: 1;
+      }
+
+      .button.github .dark{
+        position:absolute;
+        left: 50%;
+        margin-left: -48px;
+        opacity:0;
+      }
+
+      a{
+        transition:all 0.24s ease;
+        text-decoration: none;
+        border-bottom:1px solid white;
+        font-weight:800;
+      }
+      a:hover{
+        color:#ff7a7a;
+        border-color:#ff7a7a;
+      }
+
+      img{
+        max-width:100%; 
+      }
+
+      .gist{font-size:13px;line-height:18px;margin-bottom:20px;width:100%}
+      .gist pre{font-family:Menlo,Monaco,'Bitstream Vera Sans Mono','Courier New',monospace !important}
+      .gist-meta{font-family:Helvetica,Arial,sans-serif;font-size:13px !important; display:none;}
+      .gist-meta a{color:#26a !important;text-decoration:none}
+      .gist-meta a:hover{color:#0e4071 !important}
+      .gist .highlight, .gist .gist-data{background:rgba(255, 255, 255, 0.75) !important;}
 
     </style>
   </head>
   <body>
 
-    <voice-button cloud-speech-api-key="AIzaSyAkUDloJwxS5jouGnY43tcQ2VaArZQcyRM" autodetect></voice-button>
+    <div class="container">
+      <h1 class="title">OBVI</h1>
+      <h2 class="abbreviation"><span>O</span>ne <span>B</span>utton for <span>V</span>oice <span>I</span>nput</h2>
+      <p class="desc">A drop-in <a href="http://polymer-project.org" target="_blank">Polymer</a> web component for projects that use speech recognition</p>
     
+      <div class="buttons">
+        <a class="button download" href="#">Download v1.0 .zip</a>
+        <a class="button github" href="#"><img src="img/GitHub_Logo_White.png" alt=""><img class="dark" src="img/GitHub_Logo_Black.png" alt=""></a>
+      </div>
 
-    <div id="transcription"></div>
+      <section class="default">
+        <h1>Default</h1>
+        <div class="container">
+          <div class="snippet">
+            <script src="https://gist.github.com/nick-jonas/2b0b7be9ab8f20c44ed231ea0b3518d0.js"></script>
+          </div>
+          <div class="button">
+            <voice-button click-for-permission="true" cloud-speech-api-key="AIzaSyAkUDloJwxS5jouGnY43tcQ2VaArZQcyRM"></voice-button>
+          </div>
+          <div class="bubble transcribe">Press & hold and start speaking...</div>
+        </div>
+      </section>
+
+    </div>
+
 
     <script>
 
-      window.addEventListener('WebComponentsReady', function() {
-        var voiceEl = document.querySelector('voice-button'),
-          transcriptionEl = document.getElementById('transcription');
+      document.addEventListener('WebComponentsReady', function() {
 
-        voiceEl.addEventListener('mousedown', function(event){
-          transcriptionEl.innerHTML = '';
-        })
+        
+        voiceButtonEls = document.querySelectorAll('voice-button');
 
-        var transcription = '';
-        voiceEl.addEventListener('onSpeech', function(event){
-          transcription = event.detail.speechResult;
-          transcriptionEl.innerHTML = transcription;
-          transcriptionEl.classList.add('interim');
-          if(event.detail.isFinal){
-            transcriptionEl.classList.remove('interim');
-          }
-        })
-
-        voiceEl.addEventListener('onStateChange', function(event){
-          console.log('state:',event.detail.newValue);
-        })
-
+        [].forEach.call(voiceButtonEls, function(voiceEl){
+          voiceEl.addEventListener('onSpeech', function(event){
+            var speech = event.detail.speechResult;
+            this.parentElement.parentElement.querySelector('.bubble').innerHTML = speech;
+          });
+        });
 
       });
 

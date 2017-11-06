@@ -1,0 +1,20 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+
+
+- url: /
+  static_files: index.html
+  upload: index.html
+
+- url: /img
+  static_dir: img
+
+- url: /bower_components
+  static_dir: bower_components
+
+
+skip_files:
+- ^.git/.*

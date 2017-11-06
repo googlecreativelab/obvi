@@ -1,7 +1,19 @@
 {
-  "name": "obvi",
-  "version": "0.0.1",
-  "license": "MIT",
+  "name": "obvi-example-site",
+  "authors": [
+    "Nick Jonas <njonas@google.com>"
+  ],
+  "description": "Example site for the OBVI component",
+  "main": "index.html",
+  "keywords": [
+    "obvi",
+    "one",
+    "button",
+    "voice",
+    "input"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -11,14 +23,6 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
-    "paper-behaviors": "PolymerElements/paper-behaviors#1 - 2",
-    "paper-styles": "PolymerElements/paper-styles#1 - 2",
-    "paper-button": "PolymerElements/paper-button#1 - 2",
-    "webcomponentsjs": "^1.0.8",
-    "webrtc-adapter": "5.0.6",
-    "recordrtc": "^5.4.5"
-  },
-  "devDependencies": {
-    "web-component-tester": "^6.3.0"
+    "webcomponentsjs": "^1.0.8"
   }
 }
