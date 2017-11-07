@@ -903,8 +903,9 @@
           }
 
           getCurrentScale(){
-            let splitProperty = this.circle.style.transform.split(new RegExp(/\(|\)/, 'g'))
-            if(splitProperty.length === 3){
+            let transformProp = (this.circle.style.transform && this.circle.style.transform !== '') ? this.circle.style.transform : 'scale(1)'
+            let splitProperty = transformProp.split(new RegExp(/\(|\)/, 'g'))
+            if(splitProperty.length > 2){
               let currScale = parseFloat(splitProperty[1]);
               return currScale;
             }
