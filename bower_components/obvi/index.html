@@ -11,7 +11,6 @@
 //     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //     See the License for the specific language governing permissions and
 // limitations under the License. -->
-
 <!doctype html>
 <html>
   <head>
@@ -20,8 +19,10 @@
     <meta name="google" content="notranslate" />
 
     <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    
     <link rel="import" href="voice-button.html">
     <!-- <link rel="import" href="build/dist/voice-button.html"> -->
+    
     <style>
 
       body{
@@ -86,6 +87,7 @@
         voiceEl.addEventListener('onSpeech', function(event){
           transcription = event.detail.speechResult;
           transcriptionEl.innerHTML = transcription;
+          console.log('Speech response: ', event.detail.speechResult)
           transcriptionEl.classList.add('interim');
           if(event.detail.isFinal){
             transcriptionEl.classList.remove('interim');

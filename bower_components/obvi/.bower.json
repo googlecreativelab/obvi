@@ -36,5 +36,16 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/googlecreativelab/obvi.git"
-  }
+  },
+  "version": "1.1.1",
+  "_release": "1.1.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.1.1",
+    "commit": "861f012f733cb5c6540204921211d7b27ed0f05b"
+  },
+  "_source": "https://github.com/googlecreativelab/obvi.git",
+  "_target": "^1.1.1",
+  "_originalSource": "obvi",
+  "_direct": true
 }
