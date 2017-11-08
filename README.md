@@ -103,6 +103,7 @@ Basic usage is:
 | **textColor** | Changes the color of the text used for microphone access warnings. (see *Microphone Permissions* below)  | String | '#666666' | `<voice-button text-color="#574194">`
 | **keyboardTrigger** | How the keyboard will trigger the button | String | `'space-bar'` | `<voice-button keyboard-trigger="space-bar">` `space-bar`, `all-keys`, `none`
 | **diameter** | Width/height of the button | Number | `100` | `<voice-button diameter="140">`
+| **clickForPermission** | If set to true, will only ask for browser microphone permissions when the button is clicked (instead of immediately) | Boolean | false | `<voice-button click-for-permission="true"`
 | **hidePermissionText** | If set to true, the warning text for browser access to the microphone will not appear | Boolean | false | `hide-permission-text="true"`
 
 

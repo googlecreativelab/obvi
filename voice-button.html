@@ -238,10 +238,6 @@
 
   <script>
 
-    'use-strict'
-    
-
-
     // canvas animation
     // Enables browser-decided smooth animation (60fps)
     this.raf =
@@ -439,7 +435,13 @@
         this.buttonEl = Polymer.dom(this.root).querySelector('#paper-button');
 
         let circleVizContainer = Polymer.dom(this.root).querySelector('#circle-viz-container');
-        this.circleViz = new CircleViz(circleVizContainer);
+        this.circleViz = new CircleViz(circleVizContainer, () => {
+          this.onSpeechError({error: 'not-allowed'});
+        });
+        // if user wants to ask for permission when clicked, then wait
+        if(!this.clickForPermission){
+          this.circleViz.attachUserMediaStream();
+        }
 
         
         this.updateStyles({'--button-diameter': this.diameter + 'px'});
@@ -639,6 +641,9 @@
       }
 
       startListening(){
+        if(this.clickForPermission){
+          this.circleViz.attachUserMediaStream();
+        }
         this.set('state', ListeningState.LISTENING);
         if(!this.useCloudSpeech) {
           // start recognition
@@ -734,35 +739,46 @@
     */
     class CircleViz {
 
-          constructor(containerEl){
+          constructor(containerEl, onNoMicAccess){
             this.containerEl = containerEl;
             this.stopped = true;
             this.circle = document.createElement('div');
             this.circle.classList.add('circle');
             this.containerEl.appendChild(this.circle);
             this.isMobile = window.mobileAndTabletcheck();
+            this.onNoMicAccess = onNoMicAccess;
+            this.attachedUserMediaStream = false;
             // create one audio context
-            
-            // var AudioContext = window.AudioContext || window.webkitAudioContext;
-            // if(typeof AudioContext !== 'undefined'){
-            //   this.audioContext = new AudioContext();
-            // }
+            var AudioContext = window.AudioContext || window.webkitAudioContext;
+            if(typeof AudioContext !== 'undefined'){
+              this.audioContext = new AudioContext();
+            }
           }
 
-          // attachUserMediaStream(){
-          //   // if it has been stopped, let's open it back up
-          //   if(!this.attachedUserMediaStream || (this.audioStream && !this.audioStream.active)){
-          //     if(this.isMobile){
-          //       this.doDraw();
-          //     }else{
-          //       navigator.mediaDevices
-          //         .getUserMedia({audio:true})
-          //         .then(this.soundAllowed.bind(this))
-          //         .catch(this.soundNotAllowed.bind(this));
-          //     }
-          //     this.attachedUserMediaStream = true;
-          //   }
-          // }
+          attachUserMediaStream(){
+            // if it has been stopped, let's open it back up
+            if(!this.attachedUserMediaStream || (this.audioStream && !this.audioStream.active)){
+              if(this.isMobile){
+                this.doDraw();
+              }else{
+                if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+                  navigator.mediaDevices
+                    .getUserMedia({audio:true})
+                    .then(this.soundAllowed.bind(this))
+                    .catch(this.soundNotAllowed.bind(this));
+                }else{ // deprecated approach: https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getUserMedia
+                  navigator.getUserMedia = navigator['getUserMedia'] || navigator['webkitGetUserMedia'] || navigator['mozGetUserMedia'] || null;
+                  if (navigator.getUserMedia) navigator.getUserMedia({ audio: true }, (stream) => this.soundAllowed(stream), (e) => this.soundNotAllowed(e));
+                }
+              }
+              this.attachedUserMediaStream = true;
+            }
+          }
+
+          soundNotAllowed(e){
+            // circle viz graceful degrade, but let know main component know
+            this.onNoMicAccess();
+          }
 
           soundAllowed(stream) {
             this.audioStream = stream;
@@ -830,15 +846,15 @@
             if(this.stopped){
               this.containerEl.style.opacity = 1;
               this.stopped = false;
+              this.attachUserMediaStream();
             }
           }
-
           stopAnimation(){
             this.stopped = true;
             this.containerEl.style.opacity = 0;
-            // if(this.audioStream && this.audioStream.getAudioTracks().length > 0){
-            //   this.audioStream.getAudioTracks()[0].stop();
-            // }
+            if(this.audioStream && this.audioStream.getAudioTracks().length > 0){
+              this.audioStream.getAudioTracks()[0].stop();
+            }
           }
 
         }
