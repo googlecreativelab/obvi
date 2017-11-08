@@ -338,6 +338,12 @@
             document.getElementById('arrow').style.display = 'none';
           });
 
+          voiceEl.addEventListener('onStateChange', function(res){
+            if(res.detail.newValue === 'disabled'){
+              document.querySelector('#arrow img').src = 'img/disabled.png'
+            }
+          })
+
         });
 
       });
