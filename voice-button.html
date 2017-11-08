@@ -636,6 +636,9 @@
 
       stopRecordingVoice() {
 
+        if(this.isProcessingRecording) return;
+        this.isProcessingRecording = true;
+
         // to make sure onaudioprocess stops firing
         if(this.audioInput && this.jsAudioNode){
           this.audioInput.disconnect();
@@ -699,6 +702,7 @@
                   isFinal : true
                 };
                 this.dispatchEvent(new CustomEvent('onSpeech', {detail: event}));
+                this.isProcessingRecording = false;
               }
             }
             xhr.send(postBody);
@@ -872,6 +876,7 @@
                 freqSum += this.frequencyArray[i]
               }
               let freqAvg = freqSum / 255
+              console.log('frequency average =', freqAvg)
               scale = 1 + ((freqAvg / 255) * 1.2)
             }else{
               // don't have FFT spectrum, so fake it
