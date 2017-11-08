@@ -17,6 +17,7 @@
 <link rel="import" href="../paper-button/paper-button.html">
 <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
 
+<script src="https://cdn.webrtc-experiment.com/gumadapter.js"></script>
 <script src="../recordrtc/RecordRTC.js"></script>
 
 <dom-module id="voice-button">
@@ -260,6 +261,10 @@
       NONE: 'none'
     })
 
+    // maintain one audio stream, immediately, to work in safari
+    // see here: https://forums.developer.apple.com/thread/86286
+    var audioStream;
+
     class VoiceButton extends Polymer.GestureEventListeners(Polymer.Element) {
       
       static get is() {
@@ -431,13 +436,7 @@
         this.buttonEl = Polymer.dom(this.root).querySelector('#paper-button');
 
         let circleVizContainer = Polymer.dom(this.root).querySelector('#circle-viz-container');
-        this.circleViz = new CircleViz(circleVizContainer, () => {
-          this.onSpeechError({error: 'not-allowed'});
-        });
-        // if user wants to ask for permission when clicked, then wait
-        if(!this.clickForPermission){
-          this.circleViz.attachUserMediaStream();
-        }
+        this.circleViz = new CircleViz(circleVizContainer);
 
         
         this.updateStyles({'--button-diameter': this.diameter + 'px'});
@@ -466,10 +465,6 @@
           document.body.onkeydown = this.keyDown.bind(this);
           document.body.onkeyup = this.keyUp.bind(this);
         }
-        
-        // When possible, use afterNextRender to defer non-critical
-        // work until after first paint.
-        Polymer.RenderStatus.afterNextRender(this, function() {});
 
         if(this.hidePermissionText){
           Polymer.dom(this.root).querySelector('#mic-not-allowed').style.display = 'none';
@@ -502,6 +497,13 @@
             this.stopListening();
           });
         }
+
+        // get audio stream
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(
+          function success(audioStreamCaptured) {
+            audioStream = audioStreamCaptured;
+          }
+        ).catch(errorCallback);
       }
 
       getTranslation(){
@@ -711,10 +713,6 @@
       }
 
       startListening(){
-        if(this.clickForPermission){
-          this.circleViz.attachUserMediaStream();
-        }
-
         this.set('state', ListeningState.LISTENING);
         if(!this.useCloudSpeech) {
           // start recognition
@@ -835,15 +833,10 @@
               if(this.isMobile){
                 this.doDraw();
               }else{
-                if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-                  navigator.mediaDevices
-                    .getUserMedia({audio:true})
-                    .then(this.soundAllowed.bind(this))
-                    .catch(this.soundNotAllowed.bind(this));
-                }else{ // deprecated approach: https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getUserMedia
-                  navigator.getUserMedia = navigator['getUserMedia'] || navigator['webkitGetUserMedia'] || navigator['mozGetUserMedia'] || null;
-                  if (navigator.getUserMedia) navigator.getUserMedia({ audio: true }, (stream) => this.soundAllowed(stream), (e) => this.soundNotAllowed(e));
-                }
+                navigator.mediaDevices
+                  .getUserMedia({audio:true})
+                  .then(this.soundAllowed.bind(this))
+                  .catch(this.soundNotAllowed.bind(this));
               }
               this.attachedUserMediaStream = true;
             }
