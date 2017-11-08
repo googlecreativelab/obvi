@@ -33,7 +33,7 @@ npm start
 ```
 bower init
 bower install --save webcomponentsjs
-bower install --save voice-button
+bower install --save obvi
 ```
 
 To use this component, first load the web components polyfill library, `webcomponents-lite.min.js`. Many browsers have yet to implement the various web components APIs. Until they do, webcomponents-lite provides polyfill support. Be sure to include this file before any code that touches the DOM.
@@ -48,7 +48,7 @@ Once you have some elements installed and you've loaded `webcomponents-lite.min.
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
     <!-- 2. Use an HTML Import to bring in the voice button. -->
-    <link rel="import" href="bower_components/voice-button/voice-button.html">
+    <link rel="import" href="bower_components/obvi/voice-button.html">
   </head>
   <body>
     <!-- 3. Declare the element. Configure using its attributes, include your own API key -->
@@ -58,7 +58,7 @@ Once you have some elements installed and you've loaded `webcomponents-lite.min.
       // To ensure that elements are ready on polyfilled browsers, 
       // wait for WebComponentsReady. 
       document.addEventListener('WebComponentsReady', function() {
-        var voiceEl = document.getElementById('voice-button');
+        var voiceEl = document.querySelector('voice-button');
 
 		// listen for speech events
         voiceEl.addEventListener('speech', function(event){
