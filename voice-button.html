@@ -17,8 +17,7 @@
 <link rel="import" href="../paper-button/paper-button.html">
 <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
 
-<script src="https://cdn.webrtc-experiment.com/gumadapter.js"></script>
-<script src="../recordrtc/RecordRTC.js"></script>
+<script src="voice-recorder.js"></script>
 
 <dom-module id="voice-button">
 
@@ -238,6 +237,10 @@
   </template>
 
   <script>
+
+    'use-strict'
+    
+
 
     // canvas animation
     // Enables browser-decided smooth animation (60fps)
@@ -493,17 +496,9 @@
           this.recognition.onspeechend = this.onSpeechEnd.bind(this);
           this.recognition.onerror = this.onSpeechError.bind(this);
         } else {
-          document.addEventListener('onRecordingAutoStop', () => {
-            this.stopListening();
-          });
+          // get blob data to send up to Cloud Speech API
+          this.voiceRecorder = new VoiceRecorder(this.autodetect, this.onStopRecordingVoiceComplete.bind(this));
         }
-
-        // get audio stream
-        navigator.mediaDevices.getUserMedia({ audio: true }).then(
-          function success(audioStreamCaptured) {
-            audioStream = audioStreamCaptured;
-          }
-        ).catch(errorCallback);
       }
 
       getTranslation(){
@@ -568,147 +563,78 @@
         this.pressed = false;
       }
 
-      // store audio buffer for getting access to audio volume data (auto-stop)
-      setupStorage() {
-        var bufferSize = 4096;
-        var sampleRate = 44100;
-        var numberOfAudioChannels = 1;
-        if (!Storage.ctx) {
-          Storage.ctx = new AudioContext();  
-        }
-        if (Storage.ctx.createJavaScriptNode) {
-          this.jsAudioNode = Storage.ctx.createJavaScriptNode(bufferSize, numberOfAudioChannels, numberOfAudioChannels);
-        } else if (Storage.ctx.createScriptProcessor) {
-          this.jsAudioNode = Storage.ctx.createScriptProcessor(bufferSize, numberOfAudioChannels, numberOfAudioChannels);
-        } else {
-          throw 'WebAudio API has no support on this browser.';
-        }
-        this.jsAudioNode.connect(Storage.ctx.destination);
-      }
-
-      onAudioProcess(e){
-        var left = e.inputBuffer.getChannelData(0);
-        // Check for pause while speaking
-        var MIN_SPEAKING_VOLUME = 0.04;
-        var sum = 0.0;
-        var i;
-        var clipcount = 0;
-        for (i = 0; i < left.length; ++i) {
-          sum += left[i] * left[i];
-          if (Math.abs(left[i]) > 0.99) {
-            clipcount += 1;
-          }
-        }
-        var volume = Math.sqrt(sum / left.length);
-        if (volume > MIN_SPEAKING_VOLUME) {
-          self.isSpeaking = true;
-          clearTimeout(this.speakingTimeout);
-        } else {
-          if (self.isSpeaking) {
-            self.isSpeaking = false;
-            clearTimeout(this.speakingTimeout);
-            this.speakingTimeout = setTimeout(() => {
-              this.stopListening()
-            }, 500);
-          }
-        }
-      }
-
-      startRecordingVoice(audioStream) {
+      startRecordingVoice() {
         this.isRecording = true;
-        if (!this.recorder) {
-          this.recorder = RecordRTC(audioStream, {
-            disableLogs: true,
-            type: 'audio',
-            recorderType: StereoAudioRecorder,
-            numberOfAudioChannels: 1
-          });
+        this.voiceRecorder.startRecord();
+      }
+
+      // need audio blob in Base64 to send to CloudSpeech API
+      blobToBase64(blob, cb){
+        let reader = new FileReader();
+        reader.onloadend = () => {
+          let dataUrl = reader.result;
+          let base64 = dataUrl.split(',')[1];
+          cb(base64);
         }
-        this.recorder.startRecording();
-        
-        // store node to get access to audio volume
-        if(this.autodetect){
-          this.setupStorage();
-          this.audioInput = Storage.ctx.createMediaStreamSource(audioStream);
-          this.audioInput.connect(this.jsAudioNode);
-          this.jsAudioNode.onaudioprocess = this.onAudioProcess.bind(this);
+        reader.onerror = (err) => {
+          console.error('Error in reading blob', err)
         }
+        reader.readAsDataURL(blob);
       }
 
 
-      stopRecordingVoice() {
-
-        if(this.isProcessingRecording) return;
-        this.isProcessingRecording = true;
-
-        // to make sure onaudioprocess stops firing
-        if(this.audioInput && this.jsAudioNode){
-          this.audioInput.disconnect();
-          this.jsAudioNode.disconnect();
-        }
-
-        this.showLoader();
-        this.recorder.stopRecording((audioUrl) => {
+      onStopRecordingVoiceComplete(blob){
+        if(this.isRecording){
           this.isRecording = false;
+          this.set('state', ListeningState.IDLE);
+          this.circleViz.stopAnimation();
+          this.postTranscription(blob);
+        }
+      }
 
-          // need audio blob in Base64 to send to CloudSpeech API
-          let blobToBase64 = (blob, cb) => {
-            let reader = new FileReader();
-            reader.onload = () => {
-              let dataUrl = reader.result;
-              let base64 = dataUrl.split(',')[1];
-              cb(base64);
-            };
-            reader.readAsDataURL(blob);
-          };
+      postTranscription(blob){
+        this.showLoader();
 
-          var blob = this.recorder.getBlob();
-          blobToBase64(blob, (data) => {
-            let postBody = `{
-                "config": {
-                  "encoding": "LINEAR16",
-                  "languageCode": "en-US",
-                  "enableWordTimeOffsets": false
-                },
-                "audio": {
-                  "content": "${data}"
-                }
-              }`;
-            let xhr = new XMLHttpRequest();
-            xhr.open("POST", 'https://speech.googleapis.com/v1/speech:recognize?key=' + this.cloudSpeechApiKey, true);
-            xhr.onload = (data) => {
-              
-              // Request finished. Do processing here.
-              
-              // clean up recorder
-              this.recorder.clearRecordedData();
-              this.recorder.destroy();
-              this.recorder = null;
-
-              // hide the dot loader
-              this.hideLoader();
-
-              let response = JSON.parse(xhr.responseText);
-              if (
-                response &&
-                response.results &&
-                response.results[0] &&
-                response.results[0].alternatives &&
-                response.results[0].alternatives[0] &&
-                response.results[0].alternatives[0].transcript
-              ) {
-                let text = response.results[0].alternatives[0].transcript || '';
-                let event = {
-                  speechResult : text,
-                  confidence : response.results[0].alternatives[0].confidence,
-                  isFinal : true
-                };
-                this.dispatchEvent(new CustomEvent('onSpeech', {detail: event}));
-                this.isProcessingRecording = false;
+        this.blobToBase64(blob, (data) => {
+          let postBody = `{
+              "config": {
+                "encoding": "LINEAR16",
+                "languageCode": "en-US",
+                "enableWordTimeOffsets": false
+              },
+              "audio": {
+                "content": "${data}"
               }
+            }`;
+          let xhr = new XMLHttpRequest();
+          xhr.open("POST", 'https://speech.googleapis.com/v1/speech:recognize?key=' + this.cloudSpeechApiKey, true);
+          xhr.onload = (data) => {
+            // Request finished. Do processing here.
+            // hide the dot loader
+            this.hideLoader();
+
+            let response = JSON.parse(xhr.responseText);
+            if (
+              response &&
+              response.results &&
+              response.results[0] &&
+              response.results[0].alternatives &&
+              response.results[0].alternatives[0] &&
+              response.results[0].alternatives[0].transcript
+            ) {
+              let text = response.results[0].alternatives[0].transcript || '';
+              let event = {
+                speechResult : text,
+                confidence : response.results[0].alternatives[0].confidence,
+                isFinal : true
+              };
+              this.dispatchEvent(new CustomEvent('onSpeech', {detail: event}));
             }
-            xhr.send(postBody);
-          });
+          }
+          xhr.onerror = () => {
+            console.error('Error occurred during Cloud Speech AJAX request.')
+          }
+          xhr.send(postBody);
         });
       }
 
@@ -718,25 +644,20 @@
           // start recognition
           this.recognition.start();
         } else {
-          navigator.mediaDevices
-            .getUserMedia({ audio: true })
-            .then(this.startRecordingVoice.bind(this))
-            .catch(this.onSpeechError.bind(this));
+          this.startRecordingVoice();
         }
-        
         this.circleViz.startAnimation();
-
       }
       
       stopListening(){
-        this.set('state', ListeningState.IDLE);
         if(!this.useCloudSpeech) {
+          this.set('state', ListeningState.IDLE);
+          this.circleViz.stopAnimation();
           this.recognition.stop();
           this.removeSpeechEventListeners();          
         } else {
-          this.stopRecordingVoice();
+          this.voiceRecorder.stopRecord();
         }
-        this.circleViz.stopAnimation();
       }
 
       onSpeechResult(event){
@@ -804,6 +725,8 @@
       }
     }
 
+    
+
     /*
       
       Circle animation behind the voice button
@@ -811,41 +734,35 @@
     */
     class CircleViz {
 
-          constructor(containerEl, onNoMicAccess){
+          constructor(containerEl){
             this.containerEl = containerEl;
             this.stopped = true;
             this.circle = document.createElement('div');
             this.circle.classList.add('circle');
             this.containerEl.appendChild(this.circle);
             this.isMobile = window.mobileAndTabletcheck();
-            this.onNoMicAccess = onNoMicAccess;
-            this.attachedUserMediaStream = false;
             // create one audio context
-            var AudioContext = window.AudioContext || window.webkitAudioContext;
-            if(typeof AudioContext !== 'undefined'){
-              this.audioContext = new AudioContext();
-            }
+            
+            // var AudioContext = window.AudioContext || window.webkitAudioContext;
+            // if(typeof AudioContext !== 'undefined'){
+            //   this.audioContext = new AudioContext();
+            // }
           }
 
-          attachUserMediaStream(){
-            // if it has been stopped, let's open it back up
-            if(!this.attachedUserMediaStream || (this.audioStream && !this.audioStream.active)){
-              if(this.isMobile){
-                this.doDraw();
-              }else{
-                navigator.mediaDevices
-                  .getUserMedia({audio:true})
-                  .then(this.soundAllowed.bind(this))
-                  .catch(this.soundNotAllowed.bind(this));
-              }
-              this.attachedUserMediaStream = true;
-            }
-          }
-
-          soundNotAllowed(e){
-            // circle viz graceful degrade, but let know main component know
-            this.onNoMicAccess();
-          }
+          // attachUserMediaStream(){
+          //   // if it has been stopped, let's open it back up
+          //   if(!this.attachedUserMediaStream || (this.audioStream && !this.audioStream.active)){
+          //     if(this.isMobile){
+          //       this.doDraw();
+          //     }else{
+          //       navigator.mediaDevices
+          //         .getUserMedia({audio:true})
+          //         .then(this.soundAllowed.bind(this))
+          //         .catch(this.soundNotAllowed.bind(this));
+          //     }
+          //     this.attachedUserMediaStream = true;
+          //   }
+          // }
 
           soundAllowed(stream) {
             this.audioStream = stream;
@@ -913,16 +830,15 @@
             if(this.stopped){
               this.containerEl.style.opacity = 1;
               this.stopped = false;
-              this.attachUserMediaStream();
             }
           }
 
           stopAnimation(){
             this.stopped = true;
             this.containerEl.style.opacity = 0;
-            if(this.audioStream && this.audioStream.getAudioTracks().length > 0){
-              this.audioStream.getAudioTracks()[0].stop();
-            }
+            // if(this.audioStream && this.audioStream.getAudioTracks().length > 0){
+            //   this.audioStream.getAudioTracks()[0].stop();
+            // }
           }
 
         }

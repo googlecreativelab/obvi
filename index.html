@@ -20,8 +20,10 @@
     <meta name="google" content="notranslate" />
 
     <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    
     <link rel="import" href="voice-button.html">
     <!-- <link rel="import" href="build/dist/voice-button.html"> -->
+    
     <style>
 
       body{
@@ -86,6 +88,7 @@
         voiceEl.addEventListener('onSpeech', function(event){
           transcription = event.detail.speechResult;
           transcriptionEl.innerHTML = transcription;
+          console.log('Speech response: ', event.detail.speechResult)
           transcriptionEl.classList.add('interim');
           if(event.detail.isFinal){
             transcriptionEl.classList.remove('interim');

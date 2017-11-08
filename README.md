@@ -147,7 +147,7 @@ When the fallback is used, there will be no streaming speech recognition; the sp
 | Opera | [Stable](http://www.opera.com/) / [NEXT](http://www.opera.com/computer/next)  | Cloud Speech fallback |
 | Android | [Chrome](https://play.google.com/store/apps/details?id=com.chrome.beta&hl=en) / [Firefox](https://play.google.com/store/apps/details?id=org.mozilla.firefox) / [Opera](https://play.google.com/store/apps/details?id=com.opera.browser) | Cloud Speech fallback |
 | Microsoft Edge | [Normal Build](https://www.microsoft.com/en-us/windows/microsoft-edge) | Cloud Speech fallback |
-| Safari 11 | support coming soon (iOS & macOS) | Cloud Speech fallback |
+| Safari 11 | coming soon | Cloud Speech fallback |
 
 
 ## Contributing
@@ -158,7 +158,7 @@ When the fallback is used, there will be no streaming speech recognition; the sp
 5. Submit a pull request :D
 
 ## Credits
-This component was authored by [@nick-jonas](github.com/nick-jonas), and was built atop some great tools - special thanks to the Polymer team, [@muaz-khan](https://github.com/muaz-khan) for his RecordRTC library, and [@jasonfarrell](https://github.com/jasonfarrell).
+This component was authored by [@nick-jonas](github.com/nick-jonas), and was built atop some great tools - special thanks to the Polymer team, [@jasonfarrell](https://github.com/jasonfarrell), @GersonRosales & @danielstorey for showing a working recording example in iOS11 early days.
 
 
 
