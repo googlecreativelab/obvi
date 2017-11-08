@@ -324,27 +324,23 @@
       document.addEventListener('WebComponentsReady', function() {
 
         
-        voiceButtonEls = document.querySelectorAll('voice-button');
+        var voiceEl = document.querySelector('voice-button');
 
-        [].forEach.call(voiceButtonEls, function(voiceEl){
-          
-          voiceEl.addEventListener('onSpeech', function(event){
-            var speech = event.detail.speechResult;
-            document.getElementById('bubble').style.opacity = (speech.length > 0) ? 1 : 0;
-            this.parentElement.parentElement.querySelector('.bubble').innerHTML = speech;
-          });
-          
-          voiceEl.addEventListener('click', function(){
-            document.getElementById('arrow').style.display = 'none';
-          });
-
-          voiceEl.addEventListener('onStateChange', function(res){
-            if(res.detail.newValue === 'disabled'){
-              document.querySelector('#arrow img').src = 'img/disabled.png'
-            }
-          })
-
+        voiceEl.addEventListener('onSpeech', function(event){
+          var speech = event.detail.speechResult;
+          document.getElementById('bubble').style.opacity = (speech.length > 0) ? 1 : 0;
+          this.parentElement.parentElement.querySelector('.bubble').innerHTML = speech;
         });
+        
+        voiceEl.addEventListener('click', function(){
+          document.getElementById('arrow').style.display = 'none';
+        });
+
+        voiceEl.addEventListener('onStateChange', function(res){
+          if(res.detail.newValue === 'disabled'){
+            document.querySelector('#arrow img').src = 'img/disabled.png'
+          }
+        })
 
       });
 
