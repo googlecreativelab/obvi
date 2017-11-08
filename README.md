@@ -148,7 +148,7 @@ When the fallback is used, there will be no streaming speech recognition; the sp
 | Opera | [Stable](http://www.opera.com/) / [NEXT](http://www.opera.com/computer/next)  | Cloud Speech fallback |
 | Android | [Chrome](https://play.google.com/store/apps/details?id=com.chrome.beta&hl=en) / [Firefox](https://play.google.com/store/apps/details?id=org.mozilla.firefox) / [Opera](https://play.google.com/store/apps/details?id=com.opera.browser) | Cloud Speech fallback |
 | Microsoft Edge | [Normal Build](https://www.microsoft.com/en-us/windows/microsoft-edge) | Cloud Speech fallback |
-| Safari 11 | coming soon | Cloud Speech fallback |
+| Safari 11 | Stable | Cloud Speech fallback |
 
 
 ## Contributing
