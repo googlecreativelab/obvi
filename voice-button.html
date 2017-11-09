@@ -358,6 +358,7 @@
           state: {
             type: String,
             notify: false,
+            readOnly: true,
             reflectToAttribute: true,
             value: ListeningState.IDLE,
             observer: '_onStateChange'
@@ -370,7 +371,7 @@
 
       constructor() {
         super();
-        this.set('state', ListeningState.IDLE)
+        this._setState(ListeningState.IDLE)
       }
 
       checkWebRTC() {
@@ -404,7 +405,7 @@
             this.useCloudSpeech = true;
           } else {
             // disable button if speech recognition isn't available
-            this.set('state', ListeningState.DISABLED)
+            this._setState(ListeningState.DISABLED)
             this.set('disabled', true)
             this.dispatchEvent(new CustomEvent('onSpeechRecognitionUnsupported'));
             return;
@@ -576,7 +577,7 @@
       onStopRecordingVoiceComplete(blob){
         if(this.isRecording){
           this.isRecording = false;
-          this.set('state', ListeningState.IDLE);
+          this._setState(ListeningState.IDLE);
           this.circleViz.stopAnimation();
           this.postTranscription(blob);
         }
@@ -632,7 +633,7 @@
         if(this.clickForPermission){
           this.circleViz.attachUserMediaStream();
         }
-        this.set('state', ListeningState.LISTENING);
+        this._setState(ListeningState.LISTENING);
         if(!this.useCloudSpeech) {
           // start recognition
           this.recognition.start();
@@ -644,7 +645,7 @@
       
       stopListening(){
         if(!this.useCloudSpeech) {
-          this.set('state', ListeningState.IDLE);
+          this._setState(ListeningState.IDLE);
           this.circleViz.stopAnimation();
           this.recognition.stop();
           this.removeSpeechEventListeners();          
@@ -657,13 +658,14 @@
         var result = {
           speechResult : event.results[0][0].transcript,
           confidence : event.results[0][0].confidence,
-          isFinal : event.results[0].isFinal
+          isFinal : event.results[0].isFinal,
+          sourceEvent: event
         }
-        this.set('state', ListeningState.USER_INPUT);
+        this._setState(ListeningState.USER_INPUT);
         this.dispatchEvent(new CustomEvent('onSpeech', {detail: result}));
-        this.dispatchEvent(new CustomEvent('onRawSpeechEvent', {detail: event}));
+
         if(result.isFinal){
-          this.set('state', ListeningState.IDLE);
+          this._setState(ListeningState.IDLE);
           this.circleViz.stopAnimation();
           if(this.autodetect){
             this.stopListening();
@@ -672,19 +674,19 @@
       }
 
       onSpeechEnd(){
-        this.set('state', ListeningState.IDLE);
+        this._setState(ListeningState.IDLE);
         this.circleViz.stopAnimation();
         this.removeSpeechEventListeners();
       }
 
       onSpeechError(event){
-        this.set('state', ListeningState.IDLE);
+        this._setState(ListeningState.IDLE);
         this.circleViz.stopAnimation();
         this.removeSpeechEventListeners();
         this.dispatchEvent(new CustomEvent('onSpeechError', {detail: event}));
         if(event.error === 'not-allowed'){
           Polymer.dom(this.root).querySelector('#mic-not-allowed').classList.add('show');
-          this.set('state', ListeningState.DISABLED)
+          this._setState(ListeningState.DISABLED)
           this.set('disabled', true)
         }
       }
@@ -699,8 +701,8 @@
       }
 
       _onEnabledStateChange(newValue, oldValue){
-        if(this.disabled) this.set('state', ListeningState.DISABLED);
-        else this.set('state', ListeningState.IDLE);
+        if(this.disabled) this._setState(ListeningState.DISABLED);
+        else this._setState(ListeningState.IDLE);
       }
 
       _onStateChange(newValue, oldValue){
