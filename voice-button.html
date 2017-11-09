@@ -13,7 +13,6 @@
 // limitations under the License. -->
 
 <link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
 
@@ -451,7 +450,7 @@
         if(this.textColor){
           this.updateStyles({'--text-color': this.textColor})
         }
-        
+
         // mouse listeners
         this.buttonEl.addEventListener('mousedown', this.mouseDown.bind(this));
         this.buttonEl.addEventListener('mouseup', this.mouseUp.bind(this));
