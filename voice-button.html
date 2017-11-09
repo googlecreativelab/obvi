@@ -458,7 +458,7 @@
         // listen for space bar on document
         if(this.keyboardTrigger !== KeyboardTriggers.NONE){
           document.body.addEventListener('keydown', this.keyDown.bind(this));
-          document.body.addEventListener('keyup', this.keyUp.bind(this));
+          document.body.addEventListener('keyup', this.keyUp.bind(this)) ;
         }
 
         if(this.hidePermissionText){
@@ -528,8 +528,6 @@
       }
 
       mouseDown(event){
-        this.dispatchEvent(new Event('test'));
-        this.dispatchEvent(new CustomEvent('testCustom', {detail: {hey:'hey'}, bubbles:true, composed: true}));
         // If we use Cloud Speech, we'll have it start and stop by a toggle
         if(this.state === ListeningState.DISABLED) return;
         this.pressed = true;
