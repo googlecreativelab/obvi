@@ -13,6 +13,7 @@
 // limitations under the License. -->
 
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../paper-behaviors/paper-button-behavior.html">
 <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
 
 <script src="voice-recorder.js"></script>
@@ -259,6 +260,10 @@
       
       static get is() {
         return 'voice-button';
+      }
+
+      static get behaviors() {
+        return Polymer.PaperRippleBehavior;
       }
 
       static get properties(){

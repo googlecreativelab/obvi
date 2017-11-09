@@ -12,7 +12,8 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
-    "webcomponentsjs": "^1.0.8"
+    "webcomponentsjs": "^1.0.8",
+    "paper-behaviors": "^2.0.1"
   },
   "devDependencies": {
     "web-component-tester": "^6.3.0"
