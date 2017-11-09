@@ -12,11 +12,7 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
-    "paper-behaviors": "PolymerElements/paper-behaviors#1 - 2",
-    "paper-styles": "PolymerElements/paper-styles#1 - 2",
-    "paper-button": "PolymerElements/paper-button#1 - 2",
-    "webcomponentsjs": "^1.0.8",
-    "webrtc-adapter": "5.0.6"
+    "webcomponentsjs": "^1.0.8"
   },
   "devDependencies": {
     "web-component-tester": "^6.3.0"

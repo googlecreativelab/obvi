@@ -13,7 +13,6 @@
 // limitations under the License. -->
 
 <link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../paper-button/paper-button.html">
 <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
 
 <script src="voice-recorder.js"></script>
@@ -211,7 +210,7 @@
       <div id="circle-viz-container"></div>
       
       <!-- clickable button -->
-      <paper-button id="paper-button" class$="voice-button [[state]] [[flatStr]] [[autoDetectStr]]"></paper-button>
+      <button id="paper-button" class$="voice-button [[state]] [[flatStr]] [[autoDetectStr]]"></button>
       
       <div class="svg-container">
         <!-- mic icon -->
@@ -256,7 +255,7 @@
     // see here: https://forums.developer.apple.com/thread/86286
     var audioStream;
 
-    class VoiceButton extends Polymer.GestureEventListeners(Polymer.Element) {
+    class VoiceButton extends Polymer.Element {
       
       static get is() {
         return 'voice-button';
