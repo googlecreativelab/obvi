@@ -420,12 +420,12 @@
         // set the ring color to match the rain mic color 
         if(this.ringColor === '') this.set('ringColor', this.micColor);
 
-        this.googleMicEl = Polymer.dom(this.root).querySelector('#mic-svg')
-        this.googleMicLoaderEl = Polymer.dom(this.root).querySelector('#mic-loading')
-        this.googleMicDisabledEl = Polymer.dom(this.root).querySelector('#mic-svg-disabled')
-        this.buttonEl = Polymer.dom(this.root).querySelector('#paper-button');
+        this.googleMicEl = this.$['mic-svg'];
+        this.googleMicLoaderEl = this.$['mic-loading'];
+        this.googleMicDisabledEl = this.$['mic-svg-disabled'];
+        this.buttonEl = this.$['paper-button'];
 
-        let circleVizContainer = Polymer.dom(this.root).querySelector('#circle-viz-container');
+        let circleVizContainer = this.$['circle-viz-container'];
         this.circleViz = new CircleViz(circleVizContainer, () => {
           this.onSpeechError({error: 'not-allowed'});
         });
@@ -463,13 +463,13 @@
         }
 
         if(this.hidePermissionText){
-          Polymer.dom(this.root).querySelector('#mic-not-allowed').style.display = 'none';
+          this.$['mic-not-allowed'].style.display = 'none';
         }
 
         // setup microphone-not-allowed messaging
         var translatedCopy = this.getTranslation();
         if(translatedCopy){
-          Polymer.dom(this.root).querySelector('#mic-not-allowed').innerHTML = translatedCopy;
+          this.$['mic-not-allowed'].innerHTML = translatedCopy;
         }
 
         if (!this.useCloudSpeech) {
@@ -685,7 +685,7 @@
         this.removeSpeechEventListeners();
         this.dispatchEvent(new CustomEvent('onSpeechError', {detail: event}));
         if(event.error === 'not-allowed'){
-          Polymer.dom(this.root).querySelector('#mic-not-allowed').classList.add('show');
+          this.$['mic-not-allowed'].classList.add('show');
           this._setState(ListeningState.DISABLED)
           this.set('disabled', true)
         }
