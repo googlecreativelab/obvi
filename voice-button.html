@@ -237,15 +237,6 @@
   </template>
 
   <script>
-
-    // canvas animation
-    // Enables browser-decided smooth animation (60fps)
-    this.raf =
-        window.requestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.msRequestAnimationFrame;
-    window.requestAnimationFrame = this.raf;
     
     const ListeningState = Object.freeze({
       IDLE: 'idle',
@@ -829,7 +820,7 @@
                 }
               }
             }
-            this.animation = requestAnimationFrame(this.doDraw.bind(this));
+            this.animation = window.requestAnimationFrame(this.doDraw.bind(this));
           }
 
           getCurrentScale(){

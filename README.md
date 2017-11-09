@@ -88,7 +88,9 @@ Basic usage is:
 
 `<voice-button cloud-speech-api-key="YOUR_API_KEY"></voice-button>`
 
-### Options:
+
+
+### Options
 
 | Name		    | Description	| Type		  | Default | Options / Examples|
 | ----------- | :-----------:| :-----------:| :-----------:|---------:|
@@ -107,7 +109,7 @@ Basic usage is:
 | **hidePermissionText** | If set to true, the warning text for browser access to the microphone will not appear | Boolean | false | `hide-permission-text="true"`
 
 
-### Events:
+### Events
 
 You can listen for the following custom events from the voice button:
 
@@ -127,7 +129,7 @@ You can listen for the following custom events from the voice button:
       DISABLED: 'disabled'
 
 
-### Microphone Permissions:
+### Microphone Permissions
 
 When the component is loaded, microphone access is checked (unless `click-for-permission="true"` is set, then it will ask one the button is clicked).  If the host's mic access is blocked, there will be a warning shown.  The language of the text matches the `language` attribute for the component (defaults to "en-US").  If the color of the text needs to be customized, you can use the `text-color` attribute.
 
