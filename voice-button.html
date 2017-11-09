@@ -451,10 +451,10 @@
         if(this.textColor){
           this.updateStyles({'--text-color': this.textColor})
         }
-
+        
         // mouse listeners
-        Polymer.Gestures.addListener(this.buttonEl, 'down', () => this.mouseDown());
-        Polymer.Gestures.addListener(this.buttonEl, 'up', () => this.mouseUp());
+        this.buttonEl.addEventListener('mousedown', this.mouseDown.bind(this));
+        this.buttonEl.addEventListener('mouseup', this.mouseUp.bind(this));
 
         // listen for space bar on document
         if(this.keyboardTrigger !== KeyboardTriggers.NONE){
