@@ -159,7 +159,7 @@ When the fallback is used, there will be no streaming speech recognition; the sp
 5. Submit a pull request :D
 
 ## Credits
-This component was authored by [@nick-jonas](github.com/nick-jonas), and was built atop some great tools - special thanks to the Polymer team (esp. Chris Joel), [Jonathan Schaeffer](https://github/com/jonathanschaefferhookqa), [@jasonfarrell](https://github.com/jasonfarrell), [@GersonRosales](https://github.com/gersonrosales) & @danielstorey for showing a working recording example in iOS11 early days.
+This component was authored by [@nick-jonas](github.com/nick-jonas), and was built atop some great tools - special thanks to the Polymer team (esp. Chris Joel), [Jonathan Schaeffer](https://github/com/jonathanschaefferhookqa) for testing help, [@jasonfarrell](https://github.com/jasonfarrell) for fallback help, [@GersonRosales](https://github.com/gersonrosales) & [@danielstorey](https://github.com/danielstorey) for showing a working recording example in iOS11 early days.
 
 
 
