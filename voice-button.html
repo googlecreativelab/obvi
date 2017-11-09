@@ -457,8 +457,8 @@
 
         // listen for space bar on document
         if(this.keyboardTrigger !== KeyboardTriggers.NONE){
-          document.body.onkeydown = this.keyDown.bind(this);
-          document.body.onkeyup = this.keyUp.bind(this);
+          document.body.addEventListener('keydown', this.keyDown.bind(this));
+          document.body.addEventListener('keyup', this.keyUp.bind(this));
         }
 
         if(this.hidePermissionText){
