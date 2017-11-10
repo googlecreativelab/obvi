@@ -380,24 +380,23 @@
         this._setState(ListeningState.IDLE)
       }
 
-      checkWebRTC() {
-        let audioCtx = (window.AudioContext || window.webkitAudioContext)
-        if (
-          (typeof this.cloudSpeechApiKey === 'string') &&
-          (audioCtx) &&
-          (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) &&
-          (Worker)
-        ) {
-          return true;
-        }
-        console.error('Need to provide a cloud-speech-api-key for support on this browser.')
-        return false;
+      attached(){
+
+        console.log('here')
+        this.dispatchEvent(new CustomEvent('unsupported', {detail: 'message'}));
+
       }
 
       ready() {
         super.ready();
 
+
         this.useCloudSpeech = false;
+
+        // warn host if a cloud speech api isn't provided
+        if(typeof this.cloudSpeechApiKey !== 'string'){
+          console.warn('For fallback support, it is recommended to provide a cloud-speech-api-key.')
+        }
         
         // Get the SpeechRecognition object
         // only allow prefixed webkitSpeechRecognition for Chrome, Opera has support but doesn't work
@@ -406,14 +405,27 @@
         // Opera 8.0+
         var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
         const SpeechRecognition = window['webkitSpeechRecognition'];
-        if(typeof SpeechRecognition === 'undefined' || isOpera){
+        if(typeof SpeechRecognition === 'undefined' || isOpera){      
+          // make sure you have a Cloud Speech API key 
+          if(typeof this.cloudSpeechApiKey !== 'string'){
+            console.error('Need to provide a cloud-speech-api-key.')
+            this._setState(ListeningState.DISABLED)
+            this.set('disabled', true)
+            return;
+          }
+
+          // check for WebRTC support
+          // notice at the release of iOS11, webRTC has not reached WebKit
+          // more info: https://stackoverflow.com/questions/45055329/does-webkit-in-ios-11-beta-support-webrtc
           if (this.checkWebRTC()) {
             this.useCloudSpeech = true;
           } else {
+            let msg = 'WebRTC is not supported on this browser';
+            console.error(msg);
             // disable button if speech recognition isn't available
             this._setState(ListeningState.DISABLED)
             this.set('disabled', true)
-            this.dispatchEvent(new CustomEvent('onSpeechRecognitionUnsupported'));
+            this.dispatchEvent(new CustomEvent('unsupported', {detail: message}));
             return;
           }
         }
@@ -724,7 +736,22 @@
         this.googleMicLoaderEl.style.opacity = 0;
         this.googleMicEl.style.display = 'block';
       }
+
+      checkWebRTC() {
+        let audioCtx = (window.AudioContext || window.webkitAudioContext)
+        if (
+          (audioCtx) &&
+          ((navigator.mediaDevices && navigator.mediaDevices.getUserMedia) || navigator.getUserMedia) &&
+          (Worker)
+        ) {
+          return true;
+        }
+        console.error('Need to provide a cloud-speech-api-key for support on this browser.')
+        return false;
+      }
+
     }
+
 
 
     window.mobileAndTabletcheck = function() {

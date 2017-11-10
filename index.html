@@ -15,7 +15,7 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans" rel="stylesheet">
     <meta name="google" content="notranslate" />
 
     <script src="../webcomponentsjs/webcomponents-lite.js"></script>
@@ -27,7 +27,7 @@
 
       body{
         background: #dcdcdc;
-        font-family: 'Google Sans', sans-serif;
+        font-family: 'Google Sans', Arial, sans-serif;
         font-weight: 400;
         -webkit-font-smoothing: antialiased;
         -webkit-line-break: after-white-space;
@@ -48,7 +48,6 @@
 
       #transcription{
         position:fixed;
-        font-family: Roboto, sans-serif;
         font-weight:300;
         -webkit-font-smoothing: antialiased;
         -webkit-line-break: after-white-space;
@@ -74,10 +73,18 @@
     <div id="transcription"></div>
 
     <script>
+      var voiceEl = document.querySelector('voice-button'),
+        transcriptionEl = document.getElementById('transcription');
+
+      voiceEl.addEventListener('unsupported', function(event){
+        console.log('1', event.detail);
+      })
 
       window.addEventListener('WebComponentsReady', function() {
-        var voiceEl = document.querySelector('voice-button'),
-          transcriptionEl = document.getElementById('transcription');
+
+        voiceEl.addEventListener('unsupported', function(event){
+          console.log('2', event.detail);
+        })
 
         voiceEl.addEventListener('mousedown', function(event){
           transcriptionEl.innerHTML = '';

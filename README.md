@@ -118,7 +118,7 @@ You can listen for the following custom events from the voice button:
 | `onSpeech` | Result from the speech handler | `detail: { result: { speechResult : String, confidence : Number, isFinal : Boolean, sourceEvent: Object }`
 | `onSpeechError` | The raw event returned from the SpeechRecognition `onerror` handler | See [here](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition/onerror)
 | `onStateChange` | When the button changes state | `detail: { newValue: String, oldValue: String}` *see below for listening states* 
-| `onSpeechRecognitionUnsupported` | When SpeechRecognition isn't supported by the browser 
+| `unsupported` | When the button isn't supported by the browser | `detail: message`
 
 *Listening states:*
 
