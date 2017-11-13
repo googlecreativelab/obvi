@@ -7,7 +7,7 @@
 - state property is now readOnly
 - performance improvements, code refactoring
 - reduce the build file down to xxx
-- removed "onSpeechRecognitionUnsupported" event in favor of "unsupported" with detailed message
+- removed "onSpeechRecognitionUnsupported" event, just setting a new "supported" boolean property on the element
 
 
 ## v1.1.1

@@ -13,7 +13,7 @@
 // limitations under the License. -->
 
 <link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../paper-behaviors/paper-button-behavior.html">
+<link rel="import" href="../paper-behaviors/paper-ripple-behavior.html">
 <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
 
 <script src="voice-recorder.js"></script>
@@ -201,6 +201,10 @@
         display:block;
       }
 
+      paper-ripple{
+        position:absolute;
+      }
+
     </style>
 
 
@@ -211,7 +215,7 @@
       <div id="circle-viz-container"></div>
       
       <!-- clickable button -->
-      <button id="paper-button" class$="voice-button [[state]] [[flatStr]] [[autoDetectStr]]"></button>
+      <button id="paper-button" class$="voice-button [[state]] [[flatStr]] [[autoDetectStr]]"><paper-ripple></paper-ripple></button>
       
       <div class="svg-container">
         <!-- mic icon -->
@@ -260,10 +264,6 @@
       
       static get is() {
         return 'voice-button';
-      }
-
-      static get behaviors() {
-        return Polymer.PaperRippleBehavior;
       }
 
       static get properties(){
@@ -343,6 +343,12 @@
             reflectToAttribute: false,
             value: null
           },
+          circleVizColor: {
+            type:String,
+            readOnly: false,
+            reflectToAttribute: false,
+            value: '#000000'
+          },
           cloudSpeechApiKey: {
             type:String,
             readOnly: false,
@@ -355,12 +361,6 @@
             reflectToAttribute: false,
             value: ''
           },
-          rippleColor: {
-            type: String,
-            readOnly: true,
-            reflectToAttribute: false,
-            value: '#5f5f5f'
-          },
           state: {
             type: String,
             notify: false,
@@ -369,7 +369,12 @@
             value: ListeningState.IDLE,
             observer: '_onStateChange'
           },
-
+          supported: {
+            type: Boolean,
+            readOnly: true,
+            reflectToAttribute: true,
+            value: true
+          },
           flatStr: String,
           autoDetectStr: String
         }
@@ -380,16 +385,8 @@
         this._setState(ListeningState.IDLE)
       }
 
-      attached(){
-
-        console.log('here')
-        this.dispatchEvent(new CustomEvent('unsupported', {detail: 'message'}));
-
-      }
-
       ready() {
         super.ready();
-
 
         this.useCloudSpeech = false;
 
@@ -413,24 +410,20 @@
             this.set('disabled', true)
             return;
           }
-
           // check for WebRTC support
           // notice at the release of iOS11, webRTC has not reached WebKit
           // more info: https://stackoverflow.com/questions/45055329/does-webkit-in-ios-11-beta-support-webrtc
           if (this.checkWebRTC()) {
             this.useCloudSpeech = true;
           } else {
-            let msg = 'WebRTC is not supported on this browser';
-            console.error(msg);
+            this._setSupported(false)
             // disable button if speech recognition isn't available
             this._setState(ListeningState.DISABLED)
             this.set('disabled', true)
-            this.dispatchEvent(new CustomEvent('unsupported', {detail: message}));
+            console.error('WebRTC is not supported on this browser.');
             return;
           }
         }
-
-        this.updateStyles({'--paper-button-ink-color': this.rippleColor});
 
         this.set('flatStr', (this.flat) ? 'flat' : '')
         this.set('autoDetectStr', (this.autodetect) ? 'auto-detect' : '')
@@ -455,16 +448,12 @@
         
         this.updateStyles({'--button-diameter': this.diameter + 'px'});
         this.updateStyles({'--text-color': this.micColor})
+        this.updateStyles({'--circle-viz-color': this.circleVizColor}); 
+
         // set button background color
         this.updateStyles({'--button-background-color': this.buttonColor});
         // set mic color
         this.googleMicEl.style.fill = this.googleMicDisabledEl.style.fill = this.micColor;
-
-        // if on dark background, make circle rings light
-        if(this.darkBg){
-          this.updateStyles({'--circle-viz-color': '#FFF'}); 
-          this.updateStyles({'--text-color': '#FFF'})
-        }
 
         if(this.textColor){
           this.updateStyles({'--text-color': this.textColor})

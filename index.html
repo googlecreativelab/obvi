@@ -26,7 +26,7 @@
     <style>
 
       body{
-        background: #dcdcdc;
+        background: #FFFFFF;
         font-family: 'Google Sans', Arial, sans-serif;
         font-weight: 400;
         -webkit-font-smoothing: antialiased;
@@ -76,15 +76,10 @@
       var voiceEl = document.querySelector('voice-button'),
         transcriptionEl = document.getElementById('transcription');
 
-      voiceEl.addEventListener('unsupported', function(event){
-        console.log('1', event.detail);
-      })
-
       window.addEventListener('WebComponentsReady', function() {
 
-        voiceEl.addEventListener('unsupported', function(event){
-          console.log('2', event.detail);
-        })
+        // can check the supported flag, and do something if it's disabled / not supported
+        console.log('does this browser support WebRTC?', voiceEl.supported);
 
         voiceEl.addEventListener('mousedown', function(event){
           transcriptionEl.innerHTML = '';
