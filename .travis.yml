@@ -1,4 +1,7 @@
 language: node_js
+os:
+  - osx
+  - windows
 dist: trusty
 sudo: required
 addons:

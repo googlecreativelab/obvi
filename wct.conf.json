@@ -2,7 +2,7 @@
   "verbose": true,
   "plugins": {
     "local": {
-      "browsers": ["chrome", "safari", "firefox"]
+      "browsers": ["chrome", "firefox"]
     }
   }
 }
