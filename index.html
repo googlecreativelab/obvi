@@ -18,6 +18,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Google+Sans" rel="stylesheet">
     <meta name="google" content="notranslate" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <meta property="og:type" content="product">
     <meta property="og:title" content="OBVI">
@@ -329,8 +330,12 @@
 
       document.addEventListener('WebComponentsReady', function() {
 
-        
         var voiceEl = document.querySelector('voice-button');
+
+        if(!voiceEl.supported){
+          // show browser does not support this message
+          document.querySelector('#arrow img').src = 'img/unsupported.png'
+        }
 
         voiceEl.addEventListener('onSpeech', function(event){
           var speech = event.detail.speechResult;
@@ -339,11 +344,13 @@
         });
         
         voiceEl.addEventListener('click', function(){
-          document.getElementById('arrow').style.display = 'none';
+          if(voiceEl.supported && !voiceEl.disabled){
+            document.getElementById('arrow').style.display = 'none';
+          }
         });
 
         voiceEl.addEventListener('onStateChange', function(res){
-          if(res.detail.newValue === 'disabled'){
+          if(res.detail.newValue === 'disabled' && voiceEl.supported){
             document.querySelector('#arrow img').src = 'img/disabled.png'
           }
         })
