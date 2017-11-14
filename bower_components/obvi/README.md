@@ -1,6 +1,6 @@
 <!-- to do: follow these steps: https://www.webcomponents.org/publish -->
 
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/owner/my-element)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/googlecreativelab/obvi)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # OBVI
@@ -33,7 +33,7 @@ npm start
 ```
 bower init
 bower install --save webcomponentsjs
-bower install --save voice-button
+bower install --save obvi
 ```
 
 To use this component, first load the web components polyfill library, `webcomponents-lite.min.js`. Many browsers have yet to implement the various web components APIs. Until they do, webcomponents-lite provides polyfill support. Be sure to include this file before any code that touches the DOM.
@@ -48,7 +48,7 @@ Once you have some elements installed and you've loaded `webcomponents-lite.min.
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
     <!-- 2. Use an HTML Import to bring in the voice button. -->
-    <link rel="import" href="bower_components/voice-button/voice-button.html">
+    <link rel="import" href="bower_components/obvi/voice-button.html">
   </head>
   <body>
     <!-- 3. Declare the element. Configure using its attributes, include your own API key -->
@@ -58,11 +58,10 @@ Once you have some elements installed and you've loaded `webcomponents-lite.min.
       // To ensure that elements are ready on polyfilled browsers, 
       // wait for WebComponentsReady. 
       document.addEventListener('WebComponentsReady', function() {
-        var voiceEl = document.getElementById('voice-button');
-
-		// listen for speech events
+        var voiceEl = document.querySelector('voice-button');
+        // listen for speech events
         voiceEl.addEventListener('speech', function(event){
-			// event.detail.speechResult
+          // event.detail.speechResult
         })
       });
     </script>
@@ -77,7 +76,11 @@ Once you have some elements installed and you've loaded `webcomponents-lite.min.
 
 ### For a single-build (one bundled file, no Bower dependency) set up:
 
-Static hosting services like GitHub Pages and Firebase Hosting don't support serving different files to different user agents. If you're hosting your application on one of these services, you'll need to serve a single build, which can be found here: ```build/dist/voice-button.html```
+Static hosting services like GitHub Pages and Firebase Hosting don't support serving different files to different user agents. If you're hosting your application on one of these services, you'll need to serve a single build like so:
+
+```
+<link rel="import" href="bower_components/obvi/build/dist/voice-button.html">
+```
 
 You can also customize the ```polymer build``` command in ```package.json``` and create your own build file to futher suit your needs.
 
@@ -88,7 +91,9 @@ Basic usage is:
 
 `<voice-button cloud-speech-api-key="YOUR_API_KEY"></voice-button>`
 
-### Options:
+
+
+### Options
 
 | Name		    | Description	| Type		  | Default | Options / Examples|
 | ----------- | :-----------:| :-----------:| :-----------:|---------:|
@@ -97,7 +102,7 @@ Basic usage is:
 | **autodetect** | By default, the user needs to press & hold to capture speech.  If this is set to true, it will auto-detect silence to finish capturing speech. | Boolean | *false* | `<voice-button autodetect>`
 | **language** | Language for [SpeechRecognition](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition) interface.  If not set, will default to user agent's language setting.  [See here](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition/lang) for more info. | String | 'en-US' | `<voice-button language="en-US">`
 | **disabled** | Disables the button for being pressed and capturing speech. | Boolean | *false* | `<voice-button disabled>`
-| **darkBg** | Changes the color of the rings that eminate from the button to white | Boolean | *false* |  `<voice-button dark-bg>`
+| **circleVizColor** | Changes the color of the circle that eminate from the button when speaking | String | '#000000' |  `<voice-button circle-viz-color="#FFFFFF">`
 | **micColor** | Changes the color of the mic | String | '#FFFFFF' | `<voice-button mic-color="#574194">`
 | **buttonColor** | Changes the color of the button | String | '#666666' | `<voice-button button-color="#666666">`
 | **textColor** | Changes the color of the text used for microphone access warnings. (see *Microphone Permissions* below)  | String | '#666666' | `<voice-button text-color="#574194">`
@@ -107,17 +112,15 @@ Basic usage is:
 | **hidePermissionText** | If set to true, the warning text for browser access to the microphone will not appear | Boolean | false | `hide-permission-text="true"`
 
 
-### Events:
+### Events
 
 You can listen for the following custom events from the voice button:
 
 | Name		    | Description	| Return |
 | ----------- | :-----------:| :-----------:|
-| `onSpeech` | A simplified result from the speech handler | `detail: { result: { speechResult : String, confidence : Number, isFinal : Boolean }`
-| `onSpeechRaw` | The raw event returned from the SpeechRecognition `onresult` handler | See [here](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition/onresult)
+| `onSpeech` | Result from the speech handler | `detail: { result: { speechResult : String, confidence : Number, isFinal : Boolean, sourceEvent: Object }`
 | `onSpeechError` | The raw event returned from the SpeechRecognition `onerror` handler | See [here](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition/onerror)
 | `onStateChange` | When the button changes state | `detail: { newValue: String, oldValue: String}` *see below for listening states* 
-| `onSpeechRecognitionUnsupported` | When SpeechRecognition isn't supported by the browser 
 
 *Listening states:*
 
@@ -127,7 +130,7 @@ You can listen for the following custom events from the voice button:
       DISABLED: 'disabled'
 
 
-### Microphone Permissions:
+### Microphone Permissions
 
 When the component is loaded, microphone access is checked (unless `click-for-permission="true"` is set, then it will ask one the button is clicked).  If the host's mic access is blocked, there will be a warning shown.  The language of the text matches the `language` attribute for the component (defaults to "en-US").  If the color of the text needs to be customized, you can use the `text-color` attribute.
 
@@ -136,7 +139,7 @@ When the component is loaded, microphone access is checked (unless `click-for-pe
 
 ## Browser Compatibility
 
-This component defaults to using the [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API).  If the browser does not support that, it will fall back on [Google Cloud Speech API](https://cloud.google.com/speech/) and the [RecordRTC](https://github.com/muaz-khan/RecordRTC) library.  Make sure to [create an API Key](https://support.google.com/cloud/answer/6158862?hl=en) and have the `cloud-speech-api-key` attribute (see above in Options) filled out in order to use this fallback.
+This component defaults to using the [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API).  If the browser does not support that, it will fall back to [WebRTC](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API) in order to capture audio on the client and post it to the [Google Cloud Speech API](https://cloud.google.com/speech/).  Make sure to [create an API Key](https://support.google.com/cloud/answer/6158862?hl=en) and have the `cloud-speech-api-key` attribute (see above in Options) filled out in order to use this fallback.  You can check the `supported` property of the button once it's loaded in to see if it has browser support.
 
 When the fallback is used, there will be no streaming speech recognition; the speech comes back all at once.
 
@@ -148,7 +151,7 @@ When the fallback is used, there will be no streaming speech recognition; the sp
 | Opera | [Stable](http://www.opera.com/) / [NEXT](http://www.opera.com/computer/next)  | Cloud Speech fallback |
 | Android | [Chrome](https://play.google.com/store/apps/details?id=com.chrome.beta&hl=en) / [Firefox](https://play.google.com/store/apps/details?id=org.mozilla.firefox) / [Opera](https://play.google.com/store/apps/details?id=com.opera.browser) | Cloud Speech fallback |
 | Microsoft Edge | [Normal Build](https://www.microsoft.com/en-us/windows/microsoft-edge) | Cloud Speech fallback |
-| Safari 11 | coming soon | Cloud Speech fallback |
+| Safari 11 | Stable | Cloud Speech fallback |
 
 
 ## Contributing
@@ -159,9 +162,9 @@ When the fallback is used, there will be no streaming speech recognition; the sp
 5. Submit a pull request :D
 
 ## Credits
-This component was authored by [@nick-jonas](github.com/nick-jonas), and was built atop some great tools - special thanks to the Polymer team, [@jasonfarrell](https://github.com/jasonfarrell), @GersonRosales & @danielstorey for showing a working recording example in iOS11 early days.
+This component was authored by [@nick-jonas](github.com/nick-jonas), and was built atop some great tools - special thanks to the Polymer team (esp. Chris Joel), [Jonathan Schaeffer](https://github/com/jonathanschaefferhookqa) for testing help, [@jasonfarrell](https://github.com/jasonfarrell) for fallback help, [@GersonRosales](https://github.com/gersonrosales) & [@danielstorey](https://github.com/danielstorey) for showing a working recording example in iOS11 early days.
 
 
 
 
-####This is an experiment, not an official Google product. We’ll do our best to support and maintain this experiment but your mileage may vary.
+#### This is an experiment, not an official Google product. We’ll do our best to support and maintain this experiment but your mileage may vary.

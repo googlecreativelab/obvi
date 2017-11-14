@@ -12,11 +12,8 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
-    "paper-behaviors": "PolymerElements/paper-behaviors#1 - 2",
-    "paper-styles": "PolymerElements/paper-styles#1 - 2",
-    "paper-button": "PolymerElements/paper-button#1 - 2",
     "webcomponentsjs": "^1.0.8",
-    "webrtc-adapter": "5.0.6"
+    "paper-behaviors": "^2.0.1"
   },
   "devDependencies": {
     "web-component-tester": "^6.3.0"
@@ -37,15 +34,14 @@
     "type": "git",
     "url": "https://github.com/googlecreativelab/obvi.git"
   },
-  "version": "1.1.1",
-  "_release": "1.1.1",
+  "version": "2.0.0",
+  "_release": "2.0.0",
   "_resolution": {
     "type": "version",
-    "tag": "v1.1.1",
-    "commit": "861f012f733cb5c6540204921211d7b27ed0f05b"
+    "tag": "v2.0.0",
+    "commit": "88b74eb8454a3dec5cb2eb442ccbeeef36dc613c"
   },
   "_source": "https://github.com/googlecreativelab/obvi.git",
-  "_target": "^1.1.1",
-  "_originalSource": "obvi",
-  "_direct": true
+  "_target": "^2.0.0",
+  "_originalSource": "obvi"
 }

@@ -24,6 +24,6 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
     "webcomponentsjs": "^1.0.8",
-    "obvi": "^1.1.1"
+    "obvi": "^2.0.0"
   }
 }
