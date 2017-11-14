@@ -6,10 +6,6 @@
   "repository": "https://github.com/googlecreativelab/obvi",
   "author": "Nick Jonas <njonas@google.com>",
   "license": "Apache-2.0",
-  "//": [
-    "steps for versioning",
-    "https://docs.npmjs.com/cli/version"
-  ],
   "scripts": {
     "preversion": "npm test",
     "version": "npm run build && git add -A build",
