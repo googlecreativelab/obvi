@@ -2,7 +2,7 @@ language: node_js
 os:
   - linux
 dist: trusty
-sudo: false
+sudo: true
 addons:
   chrome: stable
   firefox: latest
