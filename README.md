@@ -45,7 +45,7 @@ Once you have some elements installed and you've loaded `webcomponents-lite.min.
 <html>
   <head>
     <!-- 1. Load webcomponents-lite.min.js for polyfill support. -->
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
     <!-- 2. Use an HTML Import to bring in the voice button. -->
     <link rel="import" href="bower_components/obvi/voice-button.html">
@@ -60,8 +60,10 @@ Once you have some elements installed and you've loaded `webcomponents-lite.min.
       document.addEventListener('WebComponentsReady', function() {
         var voiceEl = document.querySelector('voice-button');
         // listen for speech events
-        voiceEl.addEventListener('speech', function(event){
-          // event.detail.speechResult
+        voiceEl.addEventListener('onSpeech', function(event){
+			if(event.detail.isFinal){
+		      console.log('final:', event.detail.speechResult);
+		    }
         })
       });
     </script>
