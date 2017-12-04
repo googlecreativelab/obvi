@@ -36,9 +36,9 @@ bower install --save webcomponentsjs
 bower install --save obvi
 ```
 
-To use this component, first load the web components polyfill library, `webcomponents-lite.min.js`. Many browsers have yet to implement the various web components APIs. Until they do, webcomponents-lite provides polyfill support. Be sure to include this file before any code that touches the DOM.
+To use this component, first load the web components polyfill library, `webcomponents-lite.js`. Many browsers have yet to implement the various web components APIs. Until they do, webcomponents-lite provides polyfill support. Be sure to include this file before any code that touches the DOM.
 
-Once you have some elements installed and you've loaded `webcomponents-lite.min.js`, using an element is simply a matter of loading the element file using an HTML Import.
+Once you have some elements installed and you've loaded `webcomponents-lite.js`, using an element is simply a matter of loading the element file using an HTML Import.
 
 ```
 <!DOCTYPE html>
@@ -61,9 +61,7 @@ Once you have some elements installed and you've loaded `webcomponents-lite.min.
         var voiceEl = document.querySelector('voice-button');
         // listen for speech events
         voiceEl.addEventListener('onSpeech', function(event){
-			if(event.detail.isFinal){
-		      console.log('final:', event.detail.speechResult);
-		    }
+          if(event.detail.isFinal){ console.log('final:', event.detail.speechResult); }
         })
       });
     </script>
