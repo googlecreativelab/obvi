@@ -36,9 +36,9 @@ bower install --save webcomponentsjs
 bower install --save obvi
 ```
 
-To use this component, first load the web components polyfill library, `webcomponents-lite.js`. Many browsers have yet to implement the various web components APIs. Until they do, webcomponents-lite provides polyfill support. Be sure to include this file before any code that touches the DOM.
+To use this component, first load the web components polyfill library, `webcomponents-lite.min.js`. Many browsers have yet to implement the various web components APIs. Until they do, webcomponents-lite provides polyfill support. Be sure to include this file before any code that touches the DOM.
 
-Once you have some elements installed and you've loaded `webcomponents-lite.js`, using an element is simply a matter of loading the element file using an HTML Import.
+Once you have some elements installed and you've loaded `webcomponents-lite.min.js`, using an element is simply a matter of loading the element file using an HTML Import.
 
 ```
 <!DOCTYPE html>
@@ -61,7 +61,9 @@ Once you have some elements installed and you've loaded `webcomponents-lite.js`,
         var voiceEl = document.querySelector('voice-button');
         // listen for speech events
         voiceEl.addEventListener('onSpeech', function(event){
-          if(event.detail.isFinal){ console.log('final:', event.detail.speechResult); }
+			if(event.detail.isFinal){
+		      console.log('final:', event.detail.speechResult);
+		    }
         })
       });
     </script>
@@ -102,14 +104,23 @@ Basic usage is:
 | **autodetect** | By default, the user needs to press & hold to capture speech.  If this is set to true, it will auto-detect silence to finish capturing speech. | Boolean | *false* | `<voice-button autodetect>`
 | **language** | Language for [SpeechRecognition](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition) interface.  If not set, will default to user agent's language setting.  [See here](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition/lang) for more info. | String | 'en-US' | `<voice-button language="en-US">`
 | **disabled** | Disables the button for being pressed and capturing speech. | Boolean | *false* | `<voice-button disabled>`
-| **circleVizColor** | Changes the color of the circle that eminate from the button when speaking | String | '#000000' |  `<voice-button circle-viz-color="#FFFFFF">`
-| **micColor** | Changes the color of the mic | String | '#FFFFFF' | `<voice-button mic-color="#574194">`
-| **buttonColor** | Changes the color of the button | String | '#666666' | `<voice-button button-color="#666666">`
-| **textColor** | Changes the color of the text used for microphone access warnings. (see *Microphone Permissions* below)  | String | '#666666' | `<voice-button text-color="#574194">`
 | **keyboardTrigger** | How the keyboard will trigger the button | String | `'space-bar'` | `<voice-button keyboard-trigger="space-bar">` `space-bar`, `all-keys`, `none`
-| **diameter** | Width/height of the button | Number | `100` | `<voice-button diameter="140">`
 | **clickForPermission** | If set to true, will only ask for browser microphone permissions when the button is clicked (instead of immediately) | Boolean | false | `<voice-button click-for-permission="true"`
 | **hidePermissionText** | If set to true, the warning text for browser access to the microphone will not appear | Boolean | false | `hide-permission-text="true"`
+
+### CSS Variables
+
+You can customize the look of the button using these CSS variables (default values shown):
+
+```
+voice-button{
+	--button-diameter: 100px;
+	--mic-color: #FFFFFF;
+	--text-color: #666666;
+	--button-color: #666666;
+	--circle-viz-color: #000000;
+}
+```
 
 
 ### Events
@@ -132,7 +143,7 @@ You can listen for the following custom events from the voice button:
 
 ### Microphone Permissions
 
-When the component is loaded, microphone access is checked (unless `click-for-permission="true"` is set, then it will ask one the button is clicked).  If the host's mic access is blocked, there will be a warning shown.  The language of the text matches the `language` attribute for the component (defaults to "en-US").  If the color of the text needs to be customized, you can use the `text-color` attribute.
+When the component is loaded, microphone access is checked (unless `click-for-permission="true"` is set, then it will ask one the button is clicked).  If the host's mic access is blocked, there will be a warning shown.  The language of the text matches the `language` attribute for the component (defaults to "en-US").  If the color of the text needs to be customized, you can use the `--text-color` CSS variable.
 
 ![Microphone not allowed](https://storage.googleapis.com/readme-assets/cannotaccessmicrophone.png)
 

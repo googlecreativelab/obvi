@@ -1,3 +1,9 @@
+## v2.1.0
+
+### 12/19/2017
+
+- for styling changes, only using CSS variables now per [suggestion from @masonlouchart](https://github.com/googlecreativelab/obvi/issues/1).  This is a breaking change for those using HTML attributes like button-diameter.
+
 ## v2.0.0
 
 ### 11/14/2017

@@ -37,13 +37,15 @@
         /* red active color */
         --active-color: #fe4042;
         /* background color for button */
-        --button-background-color: #FFFFFF;
+        --button-color: #FFFFFF;
         /* circle viz color (opacity is at 0.2) */
-        --circle-viz-color:#000;
-        /* text color, used for warning messaging*/
-        --text-color:#666;
+        --circle-viz-color:#000000;
         /* diameter of button, option can be changed by user */
         --button-diameter:100px;
+        /* mic color*/
+        --mic-color:#FFFFFF;
+        /* text color, used for warning messaging*/
+        --text-color:#666;
         
         display: inline-block;
         height: var(--button-diameter);
@@ -52,7 +54,7 @@
 
       #paper-button{
         outline:none;
-        background:var(--button-background-color);
+        background:var(--button-color);
         border:none;
         width:100%;
         height:100%;
@@ -304,15 +306,6 @@
             value: false,
             observer: '_onEnabledStateChange'
           },
-          diameter: {
-            type: Number,
-            value: 100
-          },
-          inverse: {
-            type: Boolean,
-            reflectToAttribute: true,
-            value: false
-          },
           keyboardTrigger: {
             type: String,
             reflectToAttribute: true,
@@ -325,41 +318,11 @@
             readOnly: true,
             value: false
           },
-          micColor: {
-            type: String,
-            readOnly: false,
-            reflectToAttribute: false,
-            value: '#FFFFFF'
-          },
-          buttonColor: {
-            type: String,
-            readOnly: false,
-            reflectToAttribute: false,
-            value: '#666666'
-          },
-          textColor: {
-            type:String,
-            readOnly: false,
-            reflectToAttribute: false,
-            value: null
-          },
-          circleVizColor: {
-            type:String,
-            readOnly: false,
-            reflectToAttribute: false,
-            value: '#000000'
-          },
           cloudSpeechApiKey: {
             type:String,
             readOnly: false,
             reflectToAttribute: false,
             value: null
-          },
-          ringColor: {
-            type: String,
-            readOnly: true,
-            reflectToAttribute: false,
-            value: ''
           },
           state: {
             type: String,
@@ -428,8 +391,7 @@
         this.set('flatStr', (this.flat) ? 'flat' : '')
         this.set('autoDetectStr', (this.autodetect) ? 'auto-detect' : '')
 
-        // set the ring color to match the rain mic color 
-        if(this.ringColor === '') this.set('ringColor', this.micColor);
+        var micColor = getComputedStyle(this).getPropertyValue('--mic-color');
 
         this.googleMicEl = this.$['mic-svg'];
         this.googleMicLoaderEl = this.$['mic-loading'];
@@ -445,19 +407,8 @@
           this.circleViz.attachUserMediaStream();
         }
 
-        
-        this.updateStyles({'--button-diameter': this.diameter + 'px'});
-        this.updateStyles({'--text-color': this.micColor})
-        this.updateStyles({'--circle-viz-color': this.circleVizColor}); 
-
-        // set button background color
-        this.updateStyles({'--button-background-color': this.buttonColor});
         // set mic color
-        this.googleMicEl.style.fill = this.googleMicDisabledEl.style.fill = this.micColor;
-
-        if(this.textColor){
-          this.updateStyles({'--text-color': this.textColor})
-        }
+        this.googleMicEl.style.fill = this.googleMicDisabledEl.style.fill = micColor;
 
         // mouse listeners
         this.buttonEl.addEventListener('mousedown', this.mouseDown.bind(this));
