@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="../../web-component-tester/browser.js"></script>
-  <link rel="import" href="../voice-button.html">
+  <script src="../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="../../wct-browser-legacy/browser.js"></script>
+  <script type="module" src="../voice-button.js"></script>
 </head>
 <body>
   
@@ -20,22 +20,23 @@
     </template>
   </test-fixture>
 
-  <script>
-    suite('<voice-button>', function() {
-      var myEl;
-      var myElTwo;
+  <script type="module">
+import '../voice-button.js';
+suite('<voice-button>', function() {
+  var myEl;
+  var myElTwo;
 
-      setup(function(){
-        myEl = fixture('my-el-fixture');
-        myElTwo = fixture('my-el-fixture-two');
-      })
+  setup(function(){
+    myEl = fixture('my-el-fixture');
+    myElTwo = fixture('my-el-fixture-two');
+  })
 
 
-      test('is correctly translated', function() {
-        assert.equal(myEl.shadowRoot.querySelector('#mic-not-allowed').innerHTML, 'Kann nicht auf Mikrofon zugreifen');
-        assert.equal(myElTwo.shadowRoot.querySelector('#mic-not-allowed').innerHTML, 'Cannot access microphone');
-      });
-    });
-  </script>
+  test('is correctly translated', function() {
+    assert.equal(myEl.shadowRoot.querySelector('#mic-not-allowed').innerHTML, 'Kann nicht auf Mikrofon zugreifen');
+    assert.equal(myElTwo.shadowRoot.querySelector('#mic-not-allowed').innerHTML, 'Cannot access microphone');
+  });
+});
+</script>
 </body>
 </html>

@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # OBVI
-**O**ne **B**utton for **V**oice **I**nput is a customizable [webcomponent](https://developer.mozilla.org/en-US/docs/Web/Web_Components) built with [Polymer 2+](https://www.polymer-project.org/) to make it easy for including speech recognition in your web-based projects.  It uses the [Speech Recognition](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition) API, and for unsupported browsers it will fallback to a client-side [Google Cloud Speech API](https://cloud.google.com/speech/) solution.  
+**O**ne **B**utton for **V**oice **I**nput is a customizable [webcomponent](https://developer.mozilla.org/en-US/docs/Web/Web_Components) built with [Polymer 3+](https://www.polymer-project.org/) to make it easy for including speech recognition in your web-based projects.  It uses the [Speech Recognition](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition) API, and for unsupported browsers it will fallback to a client-side [Google Cloud Speech API](https://cloud.google.com/speech/) solution.  
 
 ![example](https://storage.googleapis.com/readme-assets/voice-button.gif)
 
@@ -12,60 +12,62 @@
 
 ## Run example
 
-Make sure you have polymer & bower installed globally:
+With npm installed, in the root of this repo:
 
 ```
-npm install -g polymer
-npm install -g bower
-```
-
-And in the root of this repo:
-
-```
-bower install
+npm install
 npm start
 ```
 
 ## Setting up your project
 
-[Bower](https://bower.io/) handles installing the components' dependencies and updating installed components. For more information, see [Installing with Bower](https://elements.polymer-project.org/guides/using-elements#installing-with-bower).  You need to have a ```bower.json``` file in the root of your project, and then install these dependencies:
+As of Polymer 3, all dependencies are managed through NPM and module script tags.  You can simply add obvi to your project using:
 
 ```
-bower init
-bower install --save webcomponentsjs
-bower install --save obvi
+npm install --save obvi
 ```
 
-To use this component, first load the web components polyfill library, `webcomponents-lite.min.js`. Many browsers have yet to implement the various web components APIs. Until they do, webcomponents-lite provides polyfill support. Be sure to include this file before any code that touches the DOM.
-
-Once you have some elements installed and you've loaded `webcomponents-lite.min.js`, using an element is simply a matter of loading the element file using an HTML Import.
+And then the following:
 
 ```
 <!DOCTYPE html>
 <html>
   <head>
-    <!-- 1. Load webcomponents-lite.min.js for polyfill support. -->
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-
-    <!-- 2. Use an HTML Import to bring in the voice button. -->
-    <link rel="import" href="bower_components/obvi/voice-button.html">
+	<script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
   </head>
   <body>
-    <!-- 3. Declare the element. Configure using its attributes, include your own API key -->
+  
     <voice-button id="voice-button" cloud-speech-api-key="YOUR_API_KEY" autodetect></voice-button>
 
-    <script>
-      // To ensure that elements are ready on polyfilled browsers, 
-      // wait for WebComponentsReady. 
-      document.addEventListener('WebComponentsReady', function() {
-        var voiceEl = document.querySelector('voice-button');
-        // listen for speech events
-        voiceEl.addEventListener('onSpeech', function(event){
-			if(event.detail.isFinal){
-		      console.log('final:', event.detail.speechResult);
-		    }
-        })
-      });
+    <script type="module">
+    
+      import './node_modules/obvi/voice-button.js';
+
+      var voiceEl = document.querySelector('voice-button'),
+        transcriptionEl = document.getElementById('transcription');
+
+      // can check the supported flag, and do something if it's disabled / not supported
+      console.log('does this browser support WebRTC?', voiceEl.supported);
+
+      voiceEl.addEventListener('mousedown', function(event){
+        transcriptionEl.innerHTML = '';
+      })
+
+      var transcription = '';
+      voiceEl.addEventListener('onSpeech', function(event){
+        transcription = event.detail.speechResult;
+        transcriptionEl.innerHTML = transcription;
+        console.log('Speech response: ', event.detail.speechResult)
+        transcriptionEl.classList.add('interim');
+        if(event.detail.isFinal){
+          transcriptionEl.classList.remove('interim');
+        }
+      })
+
+      voiceEl.addEventListener('onStateChange', function(event){
+        console.log('state:',event.detail.newValue);
+      })
+
     </script>
   </body>
 </html>
@@ -76,12 +78,18 @@ Once you have some elements installed and you've loaded `webcomponents-lite.min.
 
 *Also Note: If your app is running from SSL (https://), the microphone access permission will be persistent. That is, users won't have to grant/deny access every time.*
 
-### For a single-build (one bundled file, no Bower dependency) set up:
+### For a single-build with one bundled file:
 
 Static hosting services like GitHub Pages and Firebase Hosting don't support serving different files to different user agents. If you're hosting your application on one of these services, you'll need to serve a single build like so:
 
 ```
-<link rel="import" href="bower_components/obvi/build/dist/voice-button.html">
+<script type="module" src="node_modules/obvi/voice-button.js"></script>
+```
+
+or 
+
+```
+import './node_modules/obvi/dist/voice-button.js'
 ```
 
 You can also customize the ```polymer build``` command in ```package.json``` and create your own build file to futher suit your needs.

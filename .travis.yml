@@ -12,13 +12,12 @@ addons:
     packages:
       - google-chrome-stable
 node_js:
-  - "node"
+  - node
 cache:
   directories:
     - node_modules
 install:
   - npm install -g polymer-cli
   - npm install
-  - polymer install
-script:
-  - npm run test
+script: npm run test
+

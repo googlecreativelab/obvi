@@ -18,13 +18,9 @@
     <link href="https://fonts.googleapis.com/css?family=Google+Sans" rel="stylesheet">
     <meta name="google" content="notranslate" />
 
-    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
-    
-    <link rel="import" href="voice-button.html">
-    <!-- <link rel="import" href="build/dist/voice-button.html"> -->
+    <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
     
     <style>
-
 
       body{
         background: #FFFFFF;
@@ -78,37 +74,35 @@
 
     <div id="transcription"></div>
 
-    <script>
+    <script type="module">
+
+      // import './build/dist/voice-button.js';
+      import './voice-button.js';
+
       var voiceEl = document.querySelector('voice-button'),
         transcriptionEl = document.getElementById('transcription');
 
-      window.addEventListener('WebComponentsReady', function() {
+      // can check the supported flag, and do something if it's disabled / not supported
+      console.log('does this browser support WebRTC?', voiceEl.supported);
 
-        // can check the supported flag, and do something if it's disabled / not supported
-        console.log('does this browser support WebRTC?', voiceEl.supported);
+      voiceEl.addEventListener('mousedown', function(event){
+        transcriptionEl.innerHTML = '';
+      })
 
-        voiceEl.addEventListener('mousedown', function(event){
-          transcriptionEl.innerHTML = '';
-        })
+      var transcription = '';
+      voiceEl.addEventListener('onSpeech', function(event){
+        transcription = event.detail.speechResult;
+        transcriptionEl.innerHTML = transcription;
+        console.log('Speech response: ', event.detail.speechResult)
+        transcriptionEl.classList.add('interim');
+        if(event.detail.isFinal){
+          transcriptionEl.classList.remove('interim');
+        }
+      })
 
-        var transcription = '';
-        voiceEl.addEventListener('onSpeech', function(event){
-          transcription = event.detail.speechResult;
-          transcriptionEl.innerHTML = transcription;
-          console.log('Speech response: ', event.detail.speechResult)
-          transcriptionEl.classList.add('interim');
-          if(event.detail.isFinal){
-            transcriptionEl.classList.remove('interim');
-          }
-        })
-
-        voiceEl.addEventListener('onStateChange', function(event){
-          console.log('state:',event.detail.newValue);
-        })
-
-
-      });
-
+      voiceEl.addEventListener('onStateChange', function(event){
+        console.log('state:',event.detail.newValue);
+      })
 
     </script>
   </body>
