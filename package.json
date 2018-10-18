@@ -10,7 +10,7 @@
   ],
   "repository": "https://github.com/googlecreativelab/obvi",
   "homepage": "https://googlecreativelab.github.io/obvi/",
-  "name": "obvi",
+  "name": "obvi-component",
   "version": "3.0.0",
   "main": "index.js",
   "author": "Nick Jonas <njonas@google.com>",

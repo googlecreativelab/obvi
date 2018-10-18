@@ -24,7 +24,7 @@ npm start
 As of Polymer 3, all dependencies are managed through NPM and module script tags.  You can simply add obvi to your project using:
 
 ```
-npm install --save obvi
+npm install --save obvi-component
 ```
 
 And then the following:
